@@ -11,6 +11,15 @@ from scripts.sorter import csv_sorter2
 from scripts.DNAtoProtein_prodigal import run_prodigal as DNAtoProtein
 
 def main(fasta_path, output_path, gene, database='databases/chromoproteins_uniprot', process=True, save_intermediates=False, parallel=True, matrix=True, match=3, mismatch=-1, gap_open=-10, gap_extend=-4):
+    
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[logging.FileHandler("project.log")]
+    )
+
+    logger = logging.getLogger(__name__)   
+   
     logger.info('Starting main function')
     logger.info(f'Processing the {gene} gene')
     logger.info(f'{database}')
@@ -68,14 +77,6 @@ if __name__ == "__main__":
     parser.add_argument("-P", "--process", action="store_false", help="Flag to skip the DNA to Protein processing step")
 
     args = parser.parse_args()
-
-    logging.basicConfig(
-        level=logging.DEBUG,
-        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-        handlers=[logging.FileHandler("project.log")]
-    )
-
-    logger = logging.getLogger(__name__)
 
     fasta_file = args.fasta_file
     output_path = args.output_path
