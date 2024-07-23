@@ -1,5 +1,13 @@
 import tkinter as tk
 from tkinter import filedialog, messagebox
+import logging
+
+import sys
+import os
+
+# Add the directory containing the module to the system path
+sys.path.append(os.path.abspath('/Users/klonk/Desktop/Chromoprotein_Strikes_Back/ChromoSearch'))
+from chromosearch import main as ChromoSearch
 
 # Create the main window
 root = tk.Tk()
@@ -8,6 +16,8 @@ root.geometry("600x650")
 
 # Default values
 DEFAULTS = {
+    "fasta_file": '/Users/klonk/Desktop/genomes/k12.fasta',
+    "output_path": '/Users/klonk/Desktop/genomes',
     "database": 'databases/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.fasta',
     "matrix": 'databases/BLOSUM62.fasta',  # Default BLOSUM62 matrix file
     "parallel": True,
@@ -38,19 +48,30 @@ def process_inputs():
         "gene": gene_entry.get(),
         "database": database_entry.get(),
         "matrix": matrix_entry.get(),
-        "parallel": parallel_var.get(),
         "match": int(match_entry.get()),
         "mismatch": int(mismatch_entry.get()),
         "gap_open": int(gap_open_entry.get()),
         "gap_extend": int(gap_extend_entry.get()),
         "process": process_var.get()
     }
-    messagebox.showinfo("Inputs", f"Processed inputs: {inputs}")
+    messagebox.showinfo("Processing")
+
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[logging.FileHandler("project.log")]
+    )
+
+    logger = logging.getLogger(__name__)
+
+    ChromoSearch(fasta_path=inputs["fasta_file"], 
+                 output_path=inputs["output_path"], 
+                 gene=inputs["gene"])
 
 # Create labels, entry fields, and buttons for each argument
 fields = [
-    ("Fasta File", "Path to the fasta file with the whole genome for the strain"),
-    ("Output Path", "Path to where to save the output files"),
+    ("Fasta File", "Path to the fasta file with the whole genome for the strain", DEFAULTS["fasta_file"]), 
+    ("Output Path", "Path to where to save the output files", DEFAULTS["output_path"]),
     ("Organism name", "Name of the organism to process"),
     ("Database", "Path to the chromoprotein database", DEFAULTS["database"]),
     ("BLOSUM62 Matrix", "Path to the BLOSUM62 matrix file", DEFAULTS["matrix"]),
