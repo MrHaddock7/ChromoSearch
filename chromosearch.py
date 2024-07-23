@@ -39,7 +39,7 @@ def main(fasta_path, output_path, gene, database='databases/chromoproteins_unipr
         print(f'csv: finished')
 
         print(f'smith waterman + name_and_sequence_pair started...')
-        sequence_pairs = nm(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', os.path.join(temp_SW_csv, f'output_{gene}_sorter.csv'), input_database_fasta=f'{database}.fasta')
+        sequence_pairs = nm(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', os.path.join(temp_SW_csv, f'output_{gene}_sorted_pBLAST.csv'), input_database_fasta=f'{database}.fasta')
         sm(output_dir, gene_name=gene, sequence_pairs=sequence_pairs, parallel=parallel, matrix=matrix, match=match, mismatch=mismatch, gap_open=gap_open, gap_extend=gap_extend)
         print(f'smith waterman + name_and_sequence_pair finished')
 
