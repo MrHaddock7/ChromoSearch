@@ -1,6 +1,6 @@
 # ChromoSearch
 
-This is a pipeline used to find matches of chromoproteins or pigment creating enzymes in a genome. Could be used as a first step when looking for the source of a colour in a organism
+This is a pipeline used to find matches of chromoproteins or pigment creating enzymes in a genome. Could be used as a first step when looking for the source of a color in a organism.
 
 ## How to use
 
@@ -16,6 +16,8 @@ pip install -r requirements.txt
 Example use:
 
 ```
+git clone https://github.com/MrHaddock7/ChromoSearch.git
+cd ChromoSearch
 python3 chromosearch.py path/to/genome.fasta path/for/output_folder name_of_gene_or_job
 ```
 
@@ -24,3 +26,5 @@ For help flags:
 ```
 python3 chromosearch.py -h
 ```
+
+## How it works
