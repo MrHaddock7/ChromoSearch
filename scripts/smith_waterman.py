@@ -1,22 +1,26 @@
 import csv
-from Bio import pairwise2
-from Bio.pairwise2 import format_alignment
 import logging
 from Bio.Align import substitution_matrices
 import concurrent.futures as futures
 from functools import partial
-
-# from protein_sequence_obtainer import name_and_sequence_pair as nm
+from Bio.Align import PairwiseAligner
 
 logger = logging.getLogger(__name__)
 
-def matrix_sw_parall(sequence_pairs):
+def matrix_sw_parall(match, mismatch, gap_open, gap_extend, sequence_pairs):
+
+    aligner = PairwiseAligner()
+    aligner.mode = 'local'
+    aligner.match_score = match        # Match score
+    aligner.mismatch_score = mismatch    # Mismatch penalty
+    aligner.open_gap_score = gap_open   # Gap opening penalty
+    aligner.extend_gap_score = gap_extend # Gap extension penalty
+    aligner.substitution_matrix = substitution_matrices.load("BLOSUM62")
+
     (name1, seq1), (name2, seq2) = sequence_pairs
-    blosum62 = substitution_matrices.load("BLOSUM62")
     try:
-        alignments = pairwise2.align.localdx(seq1, seq2, blosum62)
-        best_alignment = alignments[0]
-        score = best_alignment[2]
+        best_alignment = aligner.align(seq1, seq2)[0]
+        score = best_alignment.score
 
     except Exception as e:
         logger.error(f'Error in matrix_sw_parall function: {e}')
@@ -28,11 +32,18 @@ def matrix_sw_parall(sequence_pairs):
 
 
 def raw_sw_parall(match, mismatch, gap_open, gap_extend, sequence_pairs):
+
+    aligner = PairwiseAligner()
+    aligner.mode = 'local'
+    aligner.match_score = match        # Match score
+    aligner.mismatch_score = mismatch    # Mismatch penalty
+    aligner.open_gap_score = gap_open   # Gap opening penalty
+    aligner.extend_gap_score = gap_extend # Gap extension penalty
+
     (name1, seq1), (name2, seq2) = sequence_pairs
     try:
-        alignments = pairwise2.align.localms(seq1, seq2, match, mismatch, gap_open, gap_extend)
-        best_alignment = alignments[0]
-        score = best_alignment[2]
+        best_alignment = aligner.align(seq1, seq2)[0]
+        score = best_alignment.score
 
     except Exception as e:
         logger.error(f'Error in raw_sw_parall function: {e}')
@@ -54,19 +65,27 @@ def smith_waterman_alignment(output, sequence_pairs, gene_name, parallel=True, m
 
             if matrix and parallel:
                 logger.debug('Entered matrix and parallel')
+                partial_matrix_sw_parall = partial(matrix_sw_parall, match, mismatch, gap_open, gap_extend)
                 with futures.ProcessPoolExecutor() as ex:
-                    result = list(ex.map(matrix_sw_parall, sequence_pairs))
+                    result = list(ex.map(partial_matrix_sw_parall, sequence_pairs))
                     for i in result:
                         writer.writerow(i)
 
             elif matrix and not parallel:
                 logger.debug('Entered matrix and NOT parallel')
-                blosum62 = substitution_matrices.load("BLOSUM62")
+                
+                aligner = PairwiseAligner()
+                aligner.mode = 'local'
+                aligner.match_score = match        # Match score
+                aligner.mismatch_score = mismatch    # Mismatch penalty
+                aligner.open_gap_score = gap_open   # Gap opening penalty
+                aligner.extend_gap_score = gap_extend # Gap extension penalty
+                aligner.substitution_matrix = substitution_matrices.load("BLOSUM62")
+
                 for (name1, seq1), (name2, seq2) in sequence_pairs:
                     try:
-                        alignments = pairwise2.align.localdx(seq1, seq2, blosum62)
-                        best_alignment = alignments[0]
-                        score = best_alignment[2]
+                        best_alignment = aligner.align(seq1, seq2)[0]
+                        score = best_alignment.score
                     except Exception as e:
                         logger.error(f'Error in smith_waterman_alignment function: {e}')
                     except KeyboardInterrupt:
@@ -84,11 +103,18 @@ def smith_waterman_alignment(output, sequence_pairs, gene_name, parallel=True, m
                     writer.writerow(i)
             else:
                 logger.debug('Entered NOT matrix and NOT parallel')
+                
+                aligner = PairwiseAligner()
+                aligner.mode = 'local'
+                aligner.match_score = match        # Match score
+                aligner.mismatch_score = mismatch    # Mismatch penalty
+                aligner.open_gap_score = gap_open   # Gap opening penalty
+                aligner.extend_gap_score = gap_extend # Gap extension penalty
+
                 for (name1, seq1), (name2, seq2) in sequence_pairs:
                     try:
-                        alignments = pairwise2.align.localms(seq1, seq2, match, mismatch, gap_open, gap_extend)
-                        best_alignment = alignments[0]
-                        score = best_alignment[2]
+                        best_alignment = aligner.align(seq1, seq2)[0]
+                        score = best_alignment.score
                     except Exception as e:
                         logger.error(f'Error in smith_waterman_alignment function: {e}')
                     except KeyboardInterrupt:

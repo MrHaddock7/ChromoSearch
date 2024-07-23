@@ -14,13 +14,12 @@ def csv_sorter(input_csv, genome, output, shortest_sequence=0, e_value=0.05):
         df = pd.read_csv(input_csv)
 
         filtered_df = df[df['evalue'] < e_value]
-        df_sorted = filtered_df.sort_values(by='evalue', ascending=False)
+        df_sorted = filtered_df.sort_values(by='evalue', ascending=True)
 
         # Write the sorted DataFrame to a new CSV file
-        df_sorted.to_csv(f'{output}/output_{genome}_sorter.csv', index=False)
+        df_sorted.to_csv(f'{output}/output_{genome}_sorted_pBLAST.csv', index=False)
 
-        print(f"CSV file sorted by column 'e' and saved to output_{genome}_sorter.csv")
-        logger.info(f'Results from csv_sorter function are saved in file: output_{genome}_sorter.csv')
+        logger.info(f'Results from csv_sorter function are saved in file: output_{genome}_sorted_pBLAST.csv')
     except Exception as e:
         logger.error(f'Error in csv_sorter function: {e}')
     except KeyboardInterrupt:
@@ -36,10 +35,9 @@ def csv_sorter2(input_csv, genome, output):
         df_sorted = df.sort_values(by='Score', ascending=False)
 
         # Write the sorted DataFrame to a new CSV file
-        df_sorted.to_csv(f'{output}/output_{genome}_sorter2.csv', index=False)
+        df_sorted.to_csv(f'{output}/output_{genome}_sorted_alignment.csv', index=False)
 
-        print(f"CSV file sorted by column 'e' and saved to output_{genome}_sorter.csv")
-        logger.info(f'Results from csv_sorter function are saved in file: output_{genome}_sorter2.csv')
+        logger.info(f'Results from csv_sorter function are saved in file: output_{genome}_sorted_alignment.csv')
     except Exception as ex:
         logger.error(f'Error in csv_sorter2 function: {ex}')
     except KeyboardInterrupt:
