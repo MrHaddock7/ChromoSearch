@@ -1,0 +1,22 @@
+{
+  "version": "1.2",
+  "dbname": "uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24",
+  "dbtype": "Protein",
+  "db-version": 5,
+  "description": "uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.fasta",
+  "number-of-letters": 790697,
+  "number-of-sequences": 1886,
+  "last-updated": "2024-06-24T19:36:00",
+  "number-of-volumes": 1,
+  "bytes-total": 1205359,
+  "bytes-to-cache": 807880,
+  "files": [
+    "uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.pdb",
+    "uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.phr",
+    "uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.pin",
+    "uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.pot",
+    "uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.psq",
+    "uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.ptf",
+    "uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.pto"
+  ]
+}

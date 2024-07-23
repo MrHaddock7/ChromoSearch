@@ -1,0 +1,22 @@
+{
+  "version": "1.2",
+  "dbname": "uniprotkb_go_manual_0046148_NOT_taxonom_2024_07_01",
+  "dbtype": "Protein",
+  "db-version": 5,
+  "description": "uniprotkb_go_manual_0046148_NOT_taxonom_2024_07_01.fasta",
+  "number-of-letters": 102653,
+  "number-of-sequences": 304,
+  "last-updated": "2024-07-01T15:52:00",
+  "number-of-volumes": 1,
+  "bytes-total": 213693,
+  "bytes-to-cache": 105574,
+  "files": [
+    "uniprotkb_go_manual_0046148_NOT_taxonom_2024_07_01.pdb",
+    "uniprotkb_go_manual_0046148_NOT_taxonom_2024_07_01.phr",
+    "uniprotkb_go_manual_0046148_NOT_taxonom_2024_07_01.pin",
+    "uniprotkb_go_manual_0046148_NOT_taxonom_2024_07_01.pot",
+    "uniprotkb_go_manual_0046148_NOT_taxonom_2024_07_01.psq",
+    "uniprotkb_go_manual_0046148_NOT_taxonom_2024_07_01.ptf",
+    "uniprotkb_go_manual_0046148_NOT_taxonom_2024_07_01.pto"
+  ]
+}
