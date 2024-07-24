@@ -35,6 +35,4 @@ We will then run a pBLAST search of of all the proteins and compare them to a da
 
 We will use these results and do a smith-waterman alignment on all good hits from the pBLAST run. You can then compare the results from both csv files and see if you have any potential candidates.
 
-<div style="text-align: center;">
-  <img src="pictures/pipeline4.drawio.svg" alt="Visualization of the pipeline"/>
-</div>
+![Visualisation of pipeline](pictures/pipeline4.drawio.svg)
