@@ -54,7 +54,7 @@ def process_inputs():
         "gap_extend": int(gap_extend_entry.get()),
         "process": process_var.get()
     }
-    messagebox.showinfo("Processing")
+    messagebox.showinfo("Processing", 'Your genome is being processed')
 
     logging.basicConfig(
         level=logging.DEBUG,
