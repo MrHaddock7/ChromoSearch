@@ -3,7 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def name_and_sequence_pair(input_genome_fasta, alignment_references, input_database_fasta, pdb_to_sm = False):
+def name_and_sequence_pair(input_genome_fasta, alignment_references, input_database_fasta):
     logger.debug('Entering pname_and_sequence_pair function')
     def parse_fasta_file(file_path):
         logger.debug('Entering parse_fasta_file function')
@@ -35,35 +35,20 @@ def name_and_sequence_pair(input_genome_fasta, alignment_references, input_datab
         fasta_file = input_genome_fasta
         fasta_file2 = input_database_fasta
 
-        print("before parse")
-
         sequences = parse_fasta_file(fasta_file)
         sequences2 = parse_fasta_file(fasta_file2)
-
-        print("after parse")
-
-        ## Remove dataframes here, not needed
 
         df = pd.DataFrame(sequences, columns=['Protein Name', 'Sequence'])
         df2 = pd.DataFrame(sequences2, columns=['Protein Name', 'Sequence'])
         df.set_index('Protein Name', inplace=True)
         df2.set_index('Protein Name', inplace=True)
 
-        if pdb_to_sm:
-            sorted_output_df = pd.read_csv(alignment_references)
+        sorted_output_df = pd.read_csv(alignment_references)
 
-            final_list = []
-            for i in range(len(sorted_output_df)):
-                final_list.append([(sorted_output_df.iloc[i, 0], df.loc[sorted_output_df.iloc[i, 0], 'Sequence']), (sorted_output_df.iloc[i, 1], df2.loc[sorted_output_df.iloc[i, 1], 'Sequence'])])
-
-        else:
-            final_list = [(row1.to_dict(), row2.to_dict()) for _, row1 in df.iterrows() for _, row2 in df2.iterrows()]
-
+        final_list = []
+        for i in range(len(sorted_output_df)):
+            final_list.append([(sorted_output_df.iloc[i, 0], df.loc[sorted_output_df.iloc[i, 0], 'Sequence']), (sorted_output_df.iloc[i, 1], df2.loc[sorted_output_df.iloc[i, 1], 'Sequence'])])
     except Exception as ex:
         logging.error(f'Error in name_and_sequence_pair function: {ex}')
     logger.debug('Exiting pname_and_sequence_pair function')
     return final_list
-
-def total_name_and_sequence_pair(input_genome_fasta, input_database_fasta):
-    logger.debug('Entering total_and_sequence_pair function')
-
