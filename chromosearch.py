@@ -80,19 +80,29 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    fasta_file = args.fasta_file
-    output_path = args.output_path
-    gene = args.gene
-    database = args.database
-    save_intermediates = args.save_intermediates
-    parallel = args.parallel
-    matrix = args.matrix
-    match = args.match
-    mismatch = args.mismatch
-    gap_open = args.gap_open
-    gap_extend = args.gap_extend
-    process = args.process
-    blastpentry = args.blastpandsmithwaterman
+    fasta_path_argument = args.fasta_file
+    output_path_argument = args.output_path
+    gene_argument = args.gene
+    database_argument = args.database
+    save_intermediates_argument = args.save_intermediates
+    parallel_argument = args.parallel
+    matrix_argument = args.matrix
+    match_argument = args.match
+    mismatch_argument = args.mismatch
+    gap_open_argument = args.gap_open
+    gap_extend_argument = args.gap_extend
+    process_argument = args.process
+    blastpnsw_argument = args.blastpandsmithwaterman
 
 
-    main(fasta_file, output_path, gene, database, process, save_intermediates, parallel, matrix, match, mismatch, gap_open, gap_extend, blastpentry)
+    main(fasta_path=fasta_path_argument, 
+         output_path=output_path_argument, 
+         gene=gene_argument, 
+         database=database_argument, 
+         process=process_argument, save_intermediates=save_intermediates_argument, 
+         parallel=parallel_argument, matrix=matrix_argument, 
+         match=match_argument, 
+         mismatch=mismatch_argument, 
+         gap_open=gap_open_argument, 
+         gap_extend=gap_extend_argument, 
+         blastpnsw=blastpnsw_argument)
