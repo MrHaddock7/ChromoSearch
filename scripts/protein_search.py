@@ -31,7 +31,9 @@ def protein_blastp_search(input_sequence, genome, output, input_database):
             for line in blast_results.stdout.strip().split('\n'):
                 csvwriter.writerow(line.split('\t'))
         
-        print(f"P-blast results saved to {output_csv_file}")
+        ## Include in the -q flag
+
+        # print(f"P-blast results saved to {output_csv_file}")
         logger.info(f'pblast result saved in file: {output_csv_file}')
     except subprocess.CalledProcessError as e:
         print("P-blast failed with the following error message:\n", e.stderr)
