@@ -48,8 +48,9 @@ def name_and_sequence_pair(input_genome_fasta, alignment_references, input_datab
 
         sorted_output_df = pd.read_csv(alignment_references)
 
+        ## Perform the SW algorithm based on the highest scoring results from BlastP
+
         if blastpsw:
-            print("if TRUE")
 
             try:
                 for i in range(len(sorted_output_df)):
@@ -68,8 +69,14 @@ def name_and_sequence_pair(input_genome_fasta, alignment_references, input_datab
                 print(f"IndexError encountered: {e}")
             except Exception as e:
                 print(f"An unexpected error occurred: {e}")
+
+        ## Perform the BlastP algorithm based on all protein candidate-protein database combinations.
+
+        ## NOTE! This may be VERY 
+        ## computationally intensive for larger databases and/or larger protein
+        ## candidate families.
+
         else:
-            print("if FALSE")
 
             final_list = []
             try:

@@ -5,7 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def protein_blastp_search(input_sequence, genome, output, input_database='/Users/klonk/Desktop/uniprotkb_e_coli_photo_AND_reviewed_tru_2024_07_26'):
+def protein_blastp_search(input_sequence, genome, output, input_database):
     logger.debug('Entering protein_blastp_search function')
     # Generate the BLASTP command
     blastp_command = [
@@ -16,6 +16,8 @@ def protein_blastp_search(input_sequence, genome, output, input_database='/Users
     ]
 
     output_csv_file = f'{output}/output_{genome}_protein_search.csv'
+
+    ## Unclear what the subprocess.PIPE does
 
     try:
         blast_results = subprocess.run(blastp_command, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
