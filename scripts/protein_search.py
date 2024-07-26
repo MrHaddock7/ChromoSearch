@@ -5,7 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def protein_blastp_search(input_sequence, genome, output, input_database='databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24'):
+def protein_blastp_search(input_sequence, genome, output, input_database='/Users/klonk/Desktop/uniprotkb_e_coli_photo_AND_reviewed_tru_2024_07_26'):
     logger.debug('Entering protein_blastp_search function')
     # Generate the BLASTP command
     blastp_command = [

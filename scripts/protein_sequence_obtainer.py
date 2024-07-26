@@ -3,7 +3,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def name_and_sequence_pair(input_genome_fasta, alignment_references, input_database_fasta):
+def name_and_sequence_pair(input_genome_fasta, alignment_references, input_database_fasta, blastpsw=True):
     logger.debug('Entering pname_and_sequence_pair function')
     def parse_fasta_file(file_path):
         logger.debug('Entering parse_fasta_file function')
@@ -32,6 +32,7 @@ def name_and_sequence_pair(input_genome_fasta, alignment_references, input_datab
         logger.debug('Exiting parse_fasta_file function')
         return sequences
     try:
+         
         fasta_file = input_genome_fasta
         fasta_file2 = input_database_fasta
 
@@ -43,12 +44,52 @@ def name_and_sequence_pair(input_genome_fasta, alignment_references, input_datab
         df.set_index('Protein Name', inplace=True)
         df2.set_index('Protein Name', inplace=True)
 
+        final_list = []
+
         sorted_output_df = pd.read_csv(alignment_references)
 
-        final_list = []
-        for i in range(len(sorted_output_df)):
-            final_list.append([(sorted_output_df.iloc[i, 0], df.loc[sorted_output_df.iloc[i, 0], 'Sequence']), (sorted_output_df.iloc[i, 1], df2.loc[sorted_output_df.iloc[i, 1], 'Sequence'])])
+        if blastpsw:
+            print("if TRUE")
+
+            try:
+                for i in range(len(sorted_output_df)):
+                    index_1 = sorted_output_df.iloc[i, 0]
+                    index_2 = sorted_output_df.iloc[i, 1]
+ 
+                    seq_1 = df.loc[index_1, 'Sequence']
+                    seq_2 = df2.loc[index_2, 'Sequence']
+                    
+                    final_list.append([(index_1, seq_1), (index_2, seq_2)])
+                
+
+            except KeyError as e:
+                print(f"KeyError encountered: {e}")
+            except IndexError as e:
+                print(f"IndexError encountered: {e}")
+            except Exception as e:
+                print(f"An unexpected error occurred: {e}")
+        else:
+            print("if FALSE")
+
+            final_list = []
+            try:
+                count = 0
+                for index_1, row_1 in df.iterrows():
+                    for index_2, row_2 in df2.iterrows():
+                        count += 1
+                        seq_1 = row_1['Sequence']
+                        seq_2 = row_2['Sequence']
+                        final_list.append([(index_1, seq_1), (index_2, seq_2)])
+
+            except Exception as e:
+                print(f"An error occurred: {e}")
+    
+            
+
     except Exception as ex:
         logging.error(f'Error in name_and_sequence_pair function: {ex}')
     logger.debug('Exiting pname_and_sequence_pair function')
     return final_list
+
+# if __name__ == '__main__':
+#     name_and_sequence_pair()

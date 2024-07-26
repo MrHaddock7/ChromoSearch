@@ -1,0 +1,22 @@
+{
+  "version": "1.2",
+  "dbname": "smallecoli",
+  "dbtype": "Protein",
+  "db-version": 5,
+  "description": "/Users/klonk/Desktop/uniprotkb_e_coli_photo_AND_reviewed_tru_2024_07_26.fasta",
+  "number-of-letters": 3917,
+  "number-of-sequences": 10,
+  "last-updated": "2024-07-26T11:48:00",
+  "number-of-volumes": 1,
+  "bytes-total": 153571,
+  "bytes-to-cache": 4176,
+  "files": [
+    "smallecoli.pdb",
+    "smallecoli.phr",
+    "smallecoli.pin",
+    "smallecoli.pot",
+    "smallecoli.psq",
+    "smallecoli.ptf",
+    "smallecoli.pto"
+  ]
+}
