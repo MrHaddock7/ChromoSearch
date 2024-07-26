@@ -26,3 +26,13 @@ python3 chromosearch.py path/to/genome.fasta path/for/output_folder name_of_gene
 ```
 python3 chromosearch.py -h
 ```
+
+## How it works
+
+The input for the pipeline is a .fasta file consiting of the genome you have sequenced. The pipeline will take this and find all protein coding sequences and translate them into protein sequences.
+
+We will then run a pBLAST search of of all the proteins and compare them to a database of either known chromoproteins, or pigment creating enzymes. We will append these results to a csv file and sort and filter the hits according to e-value < 0.05.
+
+We will use these results and do a smith-waterman alignment on all good hits from the pBLAST run. You can then compare the results from both csv files and see if you have any potential candidates.
+
+![Visualisation of pipeline](pictures/pipeline4.drawio.svg)
