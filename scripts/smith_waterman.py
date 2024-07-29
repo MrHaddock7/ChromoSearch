@@ -69,6 +69,7 @@ def smith_waterman_alignment(output, sequence_pairs, gene_name, parallel=True, m
                 with futures.ProcessPoolExecutor() as ex:
                     result = list(ex.map(partial_matrix_sw_parall, sequence_pairs))
                     for i in result:
+                        logger.debug('Writing matrix and parallel')
                         writer.writerow(i)
 
             elif matrix and not parallel:
