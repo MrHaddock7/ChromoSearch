@@ -1,3 +1,5 @@
+## NOTE! This script is meant to be run through the terminal 
+
 import argparse
 import logging
 import os
@@ -40,7 +42,7 @@ def main(fasta_path, output_path, gene, database, process=True, save_intermediat
 
     try:
 
-        ## Include all print messages in -q flag
+        ## Suggestion: Include all print messages in -q flag
 
         print(f'pbs: started...')
         pbs(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', gene, temp_protein_search, input_database=f'{database}')
@@ -68,11 +70,13 @@ def main(fasta_path, output_path, gene, database, process=True, save_intermediat
     logger.info(f'Finished processing the {gene} gene')
 
 if __name__ == "__main__":
+    ## Suggestion: We should rewrite some of the helper strings
+
     parser = argparse.ArgumentParser(description="Process a single genomic data file and perform various bioinformatics tasks.")
     parser.add_argument("fasta_file", help="Path to the fasta file with the whole genome for the strain")
     parser.add_argument("output_path", help="Path to where to save the output files")
     parser.add_argument("gene", help="Name of the gene to process")
-    parser.add_argument("-db", "--database", default='databases/smallecoli/smallecoli', help="Path to the chromoprotein database")
+    parser.add_argument("-db", "--database", default='databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24', help="Path to the chromoprotein database")
     parser.add_argument("-p", "--parallel", action="store_false", help="If you want to disable the parallelization")
     parser.add_argument("-M", "--matrix", action="store_false", help="If you want to disable BLOSUM62 matrix and use standard scores")
     parser.add_argument("--match", type=int, default=3, help="Score for a match")
