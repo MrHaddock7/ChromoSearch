@@ -2,6 +2,7 @@
 
 if __name__ == "__main__":
     import tkinter as tk
+    from tkinter import ttk
     from tkinter import filedialog, messagebox
     import logging
 
@@ -9,8 +10,9 @@ if __name__ == "__main__":
     import os
 
     root = tk.Tk()
-    root.title("Genomic Data Processor")
-    root.geometry("600x650")
+    root.title("Chromoprotein Genome Processor")
+    root.geometry("700x750")
+    root.resizable(False, False)
 
     logging.basicConfig(
         level=logging.DEBUG,
@@ -34,13 +36,13 @@ if __name__ == "__main__":
         "fasta_file": '/Users/klonk/Desktop/genomes/k12.fasta',
         "output_path": '/Users/klonk/Desktop/genomes',
         "database": '/Users/klonk/Desktop/Chromoprotein_Strikes_Back/ChromoSearch/databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24',
-        "matrix": True,  # Default BLOSUM62 matrix file
+        # "matrix": True,  # Default BLOSUM62 matrix file
         "parallel": True,
         "match": 3,
         "mismatch": -1,
         "gap_open": -10,
         "gap_extend": -4,
-        "process": True
+        "process": True,
     }
 
     # Function to select a file
@@ -61,8 +63,8 @@ if __name__ == "__main__":
             "fasta_file": fasta_file_entry.get(),
             "output_path": output_path_entry.get(),
             "gene": gene_entry.get(),
-            "database": database_entry.get(),
-            "matrix": matrix_entry.get(),
+            "database": database_entry,
+            # "matrix": matrix_entry.get(),
             "match": int(match_entry.get()),
             "mismatch": int(mismatch_entry.get()),
             "gap_open": int(gap_open_entry.get()),
@@ -78,6 +80,7 @@ if __name__ == "__main__":
                     gene=inputs["gene"],
                     database=inputs["database"],
                     blastpnsw=True,
+                    save_intermediates=True
                     )
 
     # Create labels, entry fields, and buttons for each argument
@@ -86,7 +89,7 @@ if __name__ == "__main__":
         ("Output Path", "Path to where to save the output files", DEFAULTS["output_path"]),
         ("Organism name", "Name of the organism to process"),
         ("Database", "Path to the chromoprotein database", DEFAULTS["database"]),
-        ("BLOSUM62 Matrix", "Path to the BLOSUM62 matrix file", DEFAULTS["matrix"]),
+        # ("BLOSUM62 Matrix", "Path to the BLOSUM62 matrix file", DEFAULTS["matrix"]),
         ("Match Score", "Score for a match", DEFAULTS["match"]),
         ("Mismatch Penalty", "Penalty for a mismatch", DEFAULTS["mismatch"]),
         ("Gap Open Penalty", "Gap opening penalty", DEFAULTS["gap_open"]),
@@ -98,21 +101,62 @@ if __name__ == "__main__":
     for idx, (label_text, help_text, *default) in enumerate(fields):
         label = tk.Label(root, text=label_text, anchor='w')
         label.grid(row=idx, column=0, padx=10, pady=5, sticky='e')
-        entry = tk.Entry(root, width=50, justify='center')
-        if default:
-            entry.insert(0, default[0])
-        entry.grid(row=idx, column=1, padx=10, pady=5, sticky='ew')
-        entries[label_text] = entry
-        if label_text in ["Fasta File", "Output Path", "Organism name", "Database", "BLOSUM62 Matrix"]:
-            button = tk.Button(root, text="Browse", command=lambda e=entry: select_file(e) if label_text != "Output Path" else select_directory(e))
-            button.grid(row=idx, column=2, padx=10, pady=5, sticky='ew')
+        
+        if label_text == "Database":
+            def on_option_selected(value):
+                print(f"Selected: {value}")
+
+            selected_option = tk.StringVar()
+            selected_option.set("Chromoproteins")  # Set default value
+            options = ["Chromoproteins", "Pigment-pathway enzymes"]
+
+            dropdown = tk.OptionMenu(root, selected_option, *options, command=on_option_selected)
+            dropdown.grid(row=idx, column=1, padx=10, pady=5, sticky='ew')  # Grid instead of pack
+            if selected_option.get() == "Chromoproteins":
+                entries[label_text] = "databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24"  # Store the StringVar instead of the dropdown widget
+            elif selected_option.get() == "Pigment-pathway enzymes":
+                entries[label_text] = "databases/pigment_biosynthesis_chromoproteins/uniprotkb_go_manual_0046148_NOT_taxonom_2024_07_01"
+            # else:
+            #     raise ValueError("Invalid argument for the database")
+
+
+        else:
+            entry = tk.Entry(root, width=50, justify='center')
+            if default:
+                entry.insert(0, default[0])
+            entry.grid(row=idx, column=1, padx=10, pady=5, sticky='ew')
+            entries[label_text] = entry
+            
+            if label_text in ["Fasta File", "Output Path", "Organism name"]:
+                button = tk.Button(root, text="Browse", command=lambda e=entry: select_file(e) if label_text != "Output Path" else select_directory(e))
+                button.grid(row=idx, column=2, padx=10, pady=5, sticky='ew')
+
+    class RedirectText(object):
+        def __init__(self, text_widget):
+            self.text_widget = text_widget
+
+        def write(self, string):
+            self.text_widget.insert(tk.END, string)
+            self.text_widget.see(tk.END)  # Scroll to the end
+
+        def flush(self):
+            pass
+    
+
+    # Create a Text widget for displaying terminal output
+    text_widget = tk.Text(root, wrap='word', height=10, width=80)
+    text_widget.grid(row=len(fields), column=0, columnspan=3, padx=10, pady=5, sticky='nsew')
+
+    # Redirect stdout to the Text widget
+    # sys.stdout = RedirectText(text_widget)
+
 
     # Special entries
     fasta_file_entry = entries["Fasta File"]
     output_path_entry = entries["Output Path"]
     gene_entry = entries["Organism name"]
     database_entry = entries["Database"]
-    matrix_entry = entries["BLOSUM62 Matrix"]
+    # matrix_entry = entries["BLOSUM62 Matrix"]
     match_entry = entries["Match Score"]
     mismatch_entry = entries["Mismatch Penalty"]
     gap_open_entry = entries["Gap Open Penalty"]
