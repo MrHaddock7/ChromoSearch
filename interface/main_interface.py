@@ -5,6 +5,7 @@ if __name__ == "__main__":
     from tkinter import ttk
     from tkinter import filedialog, messagebox
     import logging
+    import threading
 
     import sys
     import os
@@ -57,6 +58,18 @@ if __name__ == "__main__":
         entry_field.delete(0, tk.END)
         entry_field.insert(0, directory)
 
+    ## This is still very much work-in-progress accessing variables in this way are not meant to be done 
+
+    def execute_threading():
+        if not executing_threader:
+            # executing_threader=True
+            thread = threading.Thread(target=process_inputs)
+            thread.start()
+            # executing_threader=False
+        else:
+            print("Sequencing is already in progress")
+
+
     # Function to process the input
     def process_inputs():
         inputs = {
@@ -80,7 +93,8 @@ if __name__ == "__main__":
                     gene=inputs["gene"],
                     database=inputs["database"],
                     blastpnsw=True,
-                    save_intermediates=True
+                    save_intermediates=True,
+                    process=inputs["process"]
                     )
 
     # Create labels, entry fields, and buttons for each argument
@@ -148,7 +162,7 @@ if __name__ == "__main__":
     text_widget.grid(row=len(fields), column=0, columnspan=3, padx=10, pady=5, sticky='nsew')
 
     # Redirect stdout to the Text widget
-    # sys.stdout = RedirectText(text_widget)
+    sys.stdout = RedirectText(text_widget)
 
 
     # Special entries
@@ -168,7 +182,7 @@ if __name__ == "__main__":
     process_checkbox.grid(row=9, column=0, columnspan=3, padx=10, pady=5, sticky='w')
 
     # Create the process button
-    process_button = tk.Button(root, text="Process", command=process_inputs)
+    process_button = tk.Button(root, text="Process", command=execute_threading)
     process_button.grid(row=10, column=0, columnspan=3, padx=10, pady=20, sticky='ew')
 
     # Configure column weights to center-align elements
