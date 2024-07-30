@@ -7,9 +7,29 @@ import sys
 import os
 import threading
 
+
+
 sys.path.append(os.path.abspath('/Users/klonk/Desktop/Chromoprotein_Strikes_Back/ChromoSearch'))
 sys.path.append(os.path.abspath('/Users/klonk/Desktop/Chromoprotein_Strikes_Back/ChromoSearch/databases'))
 from chromosearch import main as ChromoSearch
+
+def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene, entries_database):
+    print("entered execute chromosearch")
+    ChromoSearch(fasta_path=entries_fasta_files.get(), 
+                output_path=entries_output_path.get(), 
+                gene=entries_gene.get(),
+                database=entries_database,
+                blastpnsw=True,
+                save_intermediates=True,
+                process=True
+                )
+    
+# def execute_threading():
+#     print("entered execute threading")
+#     thread = threading.Thread(target=execute_chromosearch(entries_fasta_files=app._entries["Fasta File"],
+#                                                         entries_output_path=app._entries["Output Path"],
+#                                                         entries_gene=app._entries["Organism name"],
+#                                                         entries_database=app._entries["Database"])).start()
 
 def select_file(self, entry_field):
     file_path = filedialog.askopenfilename()
@@ -34,7 +54,6 @@ class RedirectText(object):
         pass
 
 class Main_app:
-
     class Arguments:
         def __init__(self):
             self.fastafile = '/Users/klonk/Desktop/genomes/k12.fasta'
@@ -102,7 +121,6 @@ class Main_app:
                 # else:
                 #     raise ValueError("Invalid argument for the database")
 
-
             else:
                 entry = tk.Entry(root, width=50, justify='center')
                 if default:
@@ -114,37 +132,38 @@ class Main_app:
                     button = tk.Button(root, text="Browse", command=lambda e=entry: select_file(e) if label_text != "Output Path" else select_directory(e))
                     button.grid(row=idx, column=2, padx=10, pady=5, sticky='ew')
 
-        text_widget = tk.Text(root, wrap='word', height=10, width=80)
-        text_widget.grid(row=len(self._fields), column=0, columnspan=3, padx=10, pady=5, sticky='nsew')
+        self.text_widget = tk.Text(root, wrap='word', height=10, width=80)
+        self.text_widget.grid(row=len(self._fields), column=0, columnspan=3, padx=10, pady=5, sticky='nsew')
 
-        process_var = tk.BooleanVar(value=self.arguments.process)
-        process_checkbox = tk.Checkbutton(root, text="Enable DNA to Protein Processing")
-        process_checkbox.grid(row=9, column=0, columnspan=3, padx=10, pady=5, sticky='w')
+        self.process_var = tk.BooleanVar(value=self.arguments.process)
+        self.process_checkbox = tk.Checkbutton(root, text="Enable DNA to Protein Processing")
+        self.process_checkbox.grid(row=9, column=0, columnspan=3, padx=10, pady=5, sticky='w')
+    
+        self.process_var = tk.BooleanVar(value=self.arguments.process)
+        self.process_checkbox = tk.Checkbutton(root, text="Enable DNA to Protein Processing")
+        self.process_checkbox.grid(row=10, column=0, columnspan=3, padx=10, pady=5, sticky='w')
 
         # Create the process button
-        process_button = tk.Button(root, text="Process", command=self.execute_threading)
-        process_button.grid(row=10, column=0, columnspan=3, padx=10, pady=20, sticky='ew')
 
-        sys.stdout = RedirectText(text_widget)
-        
-    def execute_chromosearch(self):
-        print('exec')
-        ChromoSearch(fasta_path=self._entries["Fasta File"].get(), 
-                    output_path=self._entries["Output Path"].get(), 
-                    gene=self._entries["Organism name"].get(),
-                    database=self._entries["Database"],
-                    blastpnsw=True,
-                    save_intermediates=True,
-                    process=self.arguments.process
-                    )
+        self.process1_button = tk.Button(root, text="Process", command=self.execute_threading)
+        self.process1_button.grid(row=11, column=0, columnspan=3, padx=10, pady=20, sticky='ew')
+
+        sys.stdout = RedirectText(self.text_widget)
+
 
     def execute_threading(self):
-        thread = threading.Thread(target=self.execute_chromosearch())
+        print("entered execute threading")
+        thread = threading.Thread(target=execute_chromosearch,
+                                  args=(self._entries["Fasta File"],
+                                        self._entries["Output Path"],
+                                        self._entries["Organism name"],
+                                        self._entries["Database"]))
         thread.start()
-    
+
 if __name__ == '__main__':
     root = tk.Tk()
     app = Main_app(root)
+
     tk.mainloop()
 
         

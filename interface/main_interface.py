@@ -1,5 +1,3 @@
-
-
 if __name__ == "__main__":
     import tkinter as tk
     from tkinter import ttk
@@ -58,17 +56,9 @@ if __name__ == "__main__":
         entry_field.delete(0, tk.END)
         entry_field.insert(0, directory)
 
-    ## This is still very much work-in-progress accessing variables in this way are not meant to be done 
-
     def execute_threading():
-        if not executing_threader:
-            # executing_threader=True
-            thread = threading.Thread(target=process_inputs)
-            thread.start()
-            # executing_threader=False
-        else:
-            print("Sequencing is already in progress")
-
+        thread = threading.Thread(target=process_inputs)
+        thread.start()
 
     # Function to process the input
     def process_inputs():
@@ -163,7 +153,6 @@ if __name__ == "__main__":
 
     # Redirect stdout to the Text widget
     sys.stdout = RedirectText(text_widget)
-
 
     # Special entries
     fasta_file_entry = entries["Fasta File"]
