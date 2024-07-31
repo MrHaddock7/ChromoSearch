@@ -13,7 +13,7 @@ sys.path.append(os.path.abspath(''))
 # sys.path.append(os.path.abspath('databases'))
 from chromosearch import main as ChromoSearch
 
-def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene, entries_database, entries_blastp, app):
+def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene, entries_database, entries_blastp, entries_process, app):
 
     print("entered execute chromosearch")
     app.process_in_process = True
@@ -21,9 +21,9 @@ def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene,
                 output_path=entries_output_path.get(), 
                 gene=entries_gene.get(),
                 database=entries_database,
-                blastpnsw=True,
+                blastpnsw=entries_blastp.get(),
                 save_intermediates=True,
-                process=True,
+                process=entries_process,
                 )
     app.process_in_process = False
     
@@ -75,8 +75,8 @@ class Main_app:
     def __init__(self, root):
 
         root.title("Chromoprotein Genome Processor")
-        root.geometry("700x750")
-        # root.resizable(False, False)
+        root.geometry("750x650")
+        root.resizable(False, False)
         self.arguments = self.Arguments()
 
         ## Input arguments for chromosearch.py
@@ -101,7 +101,6 @@ class Main_app:
             ("Mismatch Penalty", "Penalty for a mismatch", self.arguments.mismatch),
             ("Gap Open Penalty", "Gap opening penalty", self.arguments.gap_open_entry),
             ("Gap Extend Penalty", "Gap extension penalty", self.arguments.gap_extend),
-            ("BlastP_SW", "Blastp and Smith Waterman in parallel", self.arguments.blastpnsw)
         ]
 
         ## Attributes relating to the processing of data
@@ -146,12 +145,12 @@ class Main_app:
         self.text_widget.grid(row=len(self._fields), column=0, columnspan=3, padx=10, pady=5, sticky='nsew')
 
         self.process_var = tk.BooleanVar(value=self.arguments.process)
-        self.process_checkbox = tk.Checkbutton(root, text="Enable DNA to Protein Processing")
+        self.process_checkbox = tk.Checkbutton(root, text="Disable DNA to Protein Processing", variable=self.process_var)
         self.process_checkbox.grid(row=10, column=0, columnspan=3, padx=10, pady=5, sticky='w')
-    
-        self.process_var = tk.BooleanVar(value=self.arguments.process)
-        self.process_checkbox = tk.Checkbutton(root, text="Run blastP and Smith Waterman in parallel")
-        self.process_checkbox.grid(row=11, column=0, columnspan=3, padx=10, pady=5, sticky='w')
+        
+        self.blastpSW_var = tk.BooleanVar(value=self.arguments.blastpnsw)
+        self.blastpSW_checkbox = tk.Checkbutton(root, text="Run blastP and Smith Waterman in parallel", variable=self.blastpSW_var)
+        self.blastpSW_checkbox.grid(row=11, column=0, columnspan=3, padx=10, pady=5, sticky='w')
 
         # Create the process button
 
@@ -160,6 +159,11 @@ class Main_app:
 
         sys.stdout = RedirectText(self.text_widget)
 
+    def toggle_boolean(self, boolean_var):
+        # Toggle the BooleanVar value
+        boolean_var.set(not boolean_var.get())
+        # Update the button text based on the new value
+        self.button.config(text=str(boolean_var.get()))
 
     def execute_threading(self):
 
@@ -168,13 +172,16 @@ class Main_app:
             print("Currently executing a command, please wait")
         else:
             print("entered execute threading")
+            print(self.blastpSW_var.get(), "blast p state")
+            print(self.process_var.get(), "process var state")
             thread = threading.Thread(target=execute_chromosearch,
                                     args=(self._entries["Fasta File"],
                                             self._entries["Output Path"],
                                             self._entries["Organism name"],
                                             self._entries["Database"],
-                                            self._entries["BlastP_SW"],
-                                            app))
+                                            self.blastpSW_var,
+                                            self.process_var,
+                                            self))
             thread.start()
 
 if __name__ == '__main__':
