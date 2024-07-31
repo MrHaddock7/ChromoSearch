@@ -13,7 +13,7 @@ sys.path.append(os.path.abspath('/Users/klonk/Desktop/Chromoprotein_Strikes_Back
 sys.path.append(os.path.abspath('/Users/klonk/Desktop/Chromoprotein_Strikes_Back/ChromoSearch/databases'))
 from chromosearch import main as ChromoSearch
 
-def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene, entries_database):
+def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene, entries_database, entries_blastp):
     print("entered execute chromosearch")
     ChromoSearch(fasta_path=entries_fasta_files.get(), 
                 output_path=entries_output_path.get(), 
@@ -21,7 +21,7 @@ def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene,
                 database=entries_database,
                 blastpnsw=True,
                 save_intermediates=True,
-                process=True
+                process=True,
                 )
     
 # def execute_threading():
@@ -65,6 +65,7 @@ class Main_app:
             self.gap_open_entry = -10
             self.gap_extend = -4
             self.process = True
+            self.blastpnsw = True
 
     def __init__(self, root):
 
@@ -95,7 +96,8 @@ class Main_app:
             ("Match Score", "Score for a match", self.arguments.match),
             ("Mismatch Penalty", "Penalty for a mismatch", self.arguments.mismatch),
             ("Gap Open Penalty", "Gap opening penalty", self.arguments.gap_open_entry),
-            ("Gap Extend Penalty", "Gap extension penalty", self.arguments.gap_extend)
+            ("Gap Extend Penalty", "Gap extension penalty", self.arguments.gap_extend),
+            ("BlastP_SW", "Blastp and Smith Waterman in parallel", self.arguments.blastpnsw)
         ]
 
         self._entries = {}
@@ -128,7 +130,7 @@ class Main_app:
                 entry.grid(row=idx, column=1, padx=10, pady=5, sticky='ew')
                 self._entries[label_text] = entry
                 
-                if label_text in ["Fasta File", "Output Path", "Organism name"]:
+                if label_text in ["Fasta File", "Output Path"]:
                     button = tk.Button(root, text="Browse", command=lambda e=entry: select_file(e) if label_text != "Output Path" else select_directory(e))
                     button.grid(row=idx, column=2, padx=10, pady=5, sticky='ew')
 
@@ -137,16 +139,16 @@ class Main_app:
 
         self.process_var = tk.BooleanVar(value=self.arguments.process)
         self.process_checkbox = tk.Checkbutton(root, text="Enable DNA to Protein Processing")
-        self.process_checkbox.grid(row=9, column=0, columnspan=3, padx=10, pady=5, sticky='w')
+        self.process_checkbox.grid(row=10, column=0, columnspan=3, padx=10, pady=5, sticky='w')
     
         self.process_var = tk.BooleanVar(value=self.arguments.process)
-        self.process_checkbox = tk.Checkbutton(root, text="Enable DNA to Protein Processing")
-        self.process_checkbox.grid(row=10, column=0, columnspan=3, padx=10, pady=5, sticky='w')
+        self.process_checkbox = tk.Checkbutton(root, text="Run blastP and Smith Waterman in parallel")
+        self.process_checkbox.grid(row=11, column=0, columnspan=3, padx=10, pady=5, sticky='w')
 
         # Create the process button
 
         self.process1_button = tk.Button(root, text="Process", command=self.execute_threading)
-        self.process1_button.grid(row=11, column=0, columnspan=3, padx=10, pady=20, sticky='ew')
+        self.process1_button.grid(row=12, column=0, columnspan=3, padx=10, pady=20, sticky='ew')
 
         sys.stdout = RedirectText(self.text_widget)
 
@@ -157,7 +159,8 @@ class Main_app:
                                   args=(self._entries["Fasta File"],
                                         self._entries["Output Path"],
                                         self._entries["Organism name"],
-                                        self._entries["Database"]))
+                                        self._entries["Database"],
+                                        self._entries["BlastP_SW"]))
         thread.start()
 
 if __name__ == '__main__':
