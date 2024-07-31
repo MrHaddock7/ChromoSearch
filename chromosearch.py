@@ -12,7 +12,20 @@ from scripts.sorter import csv_sorter
 from scripts.sorter import csv_sorter2
 from scripts.DNAtoProtein_prodigal import run_prodigal as DNAtoProtein
 
-def main(fasta_path, output_path, gene, database, process=True, save_intermediates=True, parallel=True, matrix=True, match=3, mismatch=-1, gap_open=-10, gap_extend=-4, blastpnsw=True):
+def main(fasta_path, 
+         output_path, 
+         gene, 
+         database, 
+         process=True, 
+         save_intermediates=True, 
+         parallel=True, 
+         matrix=True, 
+         match=3, 
+         mismatch=-1, 
+         gap_open=-10, 
+         gap_extend=-4, 
+         blastpnsw=True, 
+         quiet_mode=False):
     
     logging.basicConfig(
         level=logging.DEBUG,
@@ -31,34 +44,40 @@ def main(fasta_path, output_path, gene, database, process=True, save_intermediat
         os.makedirs(output_dir)
         logger.info(f'Created directory: {output_dir}')
 
-    if process:
-        print(f'DNAtoProtein: started...')
-        DNAtoProtein(fasta_path, output_dir, gene)
-        print(f'DNAtoProtein: finished')
 
     # if save_intermediates:
     temp_protein_search = os.path.join(output_dir)
     temp_SW_csv = os.path.join(output_dir)
 
+    def print_quiet_mode(message):
+        if not quiet_mode:
+            print(message)
+
     try:
 
         ## Suggestion: Include all print messages in -q flag
 
-        print(f'pbs: started...')
+        if process:
+            print_quiet_mode(f'DNAtoProtein: started...')
+            DNAtoProtein(fasta_path, output_dir, gene)
+            print_quiet_mode(f'DNAtoProtein: finished')
+
+
+        print_quiet_mode('pbs: started...')
         pbs(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', gene, temp_protein_search, input_database=f'{database}')
-        print(f'pbs: finished')
+        print_quiet_mode(f'pbs: finished')
 
-        print(f'csv: started...')
+        print_quiet_mode(f'csv: started...')
         csv_sorter(os.path.join(temp_protein_search, f'output_{gene}_protein_search.csv'), gene, temp_SW_csv)
-        print(f'csv: finished')
+        print_quiet_mode(f'csv: finished')
 
-        print(f'smith waterman + name_and_sequence_pair started...')
+        print_quiet_mode(f'smith waterman + name_and_sequence_pair started...')
         sequence_pairs = nm(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', os.path.join(temp_SW_csv, f'output_{gene}_sorted_pBLAST.csv'), input_database_fasta=f'{database}.fasta', blastpsw=blastpnsw)
         
-        print(f'Performing the Smith-Waterman algorithm on {len(sequence_pairs)} sequence pairs...')
+        print_quiet_mode(f'Performing the Smith-Waterman algorithm on {len(sequence_pairs)} sequence pairs...')
 
         sm(output_dir, gene_name=gene, sequence_pairs=sequence_pairs, parallel=parallel, matrix=matrix, match=match, mismatch=mismatch, gap_open=gap_open, gap_extend=gap_extend)
-        print(f'smith waterman + name_and_sequence_pair finished')
+        print_quiet_mode(f'smith waterman + name_and_sequence_pair finished')
 
         csv_sorter2(f'{output_dir}/output_{gene}_smith_waterman.csv', gene, output_dir)
 
@@ -86,6 +105,7 @@ if __name__ == "__main__":
     parser.add_argument("-s", "--save_intermediates", action="store_true", help="Flag to save intermediate files")
     parser.add_argument("-P", "--process", action="store_false", help="Flag to skip the DNA to Protein processing step")
     parser.add_argument("-bpsw", "--blastpandsmithwaterman", action="store_false", help="Flag to turn off Smith-Waterman algorithm based on blastp results, and instead perform Smith-Waterman on all possible candidate protein-database protein combinations. NOTE! This can be VERY computationally intensive for larger sequences and/or databases.")
+    parser.add_argument("-q", "--quiet", action="store_true", help="Quiets the text-outputs of the ChromoSearch")
 
     args = parser.parse_args()
 
@@ -102,6 +122,8 @@ if __name__ == "__main__":
     gap_extend_argument = args.gap_extend
     process_argument = args.process
     blastpnsw_argument = args.blastpandsmithwaterman
+    quiet_argument = args.quiet
+
 
 
     main(fasta_path=fasta_path_argument, 
@@ -114,4 +136,5 @@ if __name__ == "__main__":
          mismatch=mismatch_argument, 
          gap_open=gap_open_argument, 
          gap_extend=gap_extend_argument, 
-         blastpnsw=blastpnsw_argument)
+         blastpnsw=blastpnsw_argument,
+         quiet_mode=quiet_argument)

@@ -15,8 +15,8 @@ from chromosearch import main as ChromoSearch
 
 def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene, entries_database, entries_blastp, entries_process, app):
 
-    print("entered execute chromosearch")
     app.process_in_process = True
+    print("Running Chromosearch...")
     ChromoSearch(fasta_path=entries_fasta_files.get(), 
                 output_path=entries_output_path.get(), 
                 gene=entries_gene.get(),
@@ -25,6 +25,7 @@ def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene,
                 save_intermediates=True,
                 process=entries_process,
                 )
+    print("ChromoSearch Complete")
     app.process_in_process = False
     
 # def execute_threading():
@@ -50,8 +51,10 @@ class RedirectText(object):
         self.text_widget = text_widget
 
     def write(self, string):
+        self.text_widget.configure(state='normal')
         self.text_widget.insert(tk.END, string)
         self.text_widget.see(tk.END)  # Scroll to the end
+        self.text_widget.configure(state='disabled')
 
     def flush(self):
         pass
@@ -78,6 +81,11 @@ class Main_app:
         root.geometry("750x650")
         root.resizable(False, False)
         self.arguments = self.Arguments()
+
+        ## Icon 
+
+        # icon = tk.PhotoImage(file='/Users/klonk/Desktop/colorwheel.png')
+        # root.iconphoto(True, icon)
 
         ## Input arguments for chromosearch.py
 
@@ -143,6 +151,7 @@ class Main_app:
 
         self.text_widget = tk.Text(root, wrap='word', height=10, width=80)
         self.text_widget.grid(row=len(self._fields), column=0, columnspan=3, padx=10, pady=5, sticky='nsew')
+        self.text_widget.configure(state='disabled')
 
         self.process_var = tk.BooleanVar(value=self.arguments.process)
         self.process_checkbox = tk.Checkbutton(root, text="Disable DNA to Protein Processing", variable=self.process_var)
@@ -171,9 +180,6 @@ class Main_app:
         if self.process_in_process:
             print("Currently executing a command, please wait")
         else:
-            print("entered execute threading")
-            print(self.blastpSW_var.get(), "blast p state")
-            print(self.process_var.get(), "process var state")
             thread = threading.Thread(target=execute_chromosearch,
                                     args=(self._entries["Fasta File"],
                                             self._entries["Output Path"],
