@@ -13,8 +13,10 @@ sys.path.append(os.path.abspath(''))
 # sys.path.append(os.path.abspath('databases'))
 from chromosearch import main as ChromoSearch
 
-def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene, entries_database, entries_blastp):
+def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene, entries_database, entries_blastp, app):
+
     print("entered execute chromosearch")
+    app.process_in_process = True
     ChromoSearch(fasta_path=entries_fasta_files.get(), 
                 output_path=entries_output_path.get(), 
                 gene=entries_gene.get(),
@@ -23,6 +25,7 @@ def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene,
                 save_intermediates=True,
                 process=True,
                 )
+    app.process_in_process = False
     
 # def execute_threading():
 #     print("entered execute threading")
@@ -56,6 +59,8 @@ class RedirectText(object):
 class Main_app:
     class Arguments:
         def __init__(self):
+
+            ## Arguments for the 
             self.fastafile = '/Users/klonk/Desktop/genomes/k12.fasta'
             self.outputfile = '/Users/klonk/Desktop/genomes'
             self.database = 'databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24'
@@ -69,7 +74,6 @@ class Main_app:
 
     def __init__(self, root):
 
-        self.exe_threading = False
         root.title("Chromoprotein Genome Processor")
         root.geometry("700x750")
         # root.resizable(False, False)
@@ -99,6 +103,10 @@ class Main_app:
             ("Gap Extend Penalty", "Gap extension penalty", self.arguments.gap_extend),
             ("BlastP_SW", "Blastp and Smith Waterman in parallel", self.arguments.blastpnsw)
         ]
+
+        ## Attributes relating to the processing of data
+
+        self.process_in_process = False
 
         self._entries = {}
 
@@ -154,14 +162,20 @@ class Main_app:
 
 
     def execute_threading(self):
-        print("entered execute threading")
-        thread = threading.Thread(target=execute_chromosearch,
-                                  args=(self._entries["Fasta File"],
-                                        self._entries["Output Path"],
-                                        self._entries["Organism name"],
-                                        self._entries["Database"],
-                                        self._entries["BlastP_SW"]))
-        thread.start()
+
+        # Checks whether the program is executing a chromosearch
+        if self.process_in_process:
+            print("Currently executing a command, please wait")
+        else:
+            print("entered execute threading")
+            thread = threading.Thread(target=execute_chromosearch,
+                                    args=(self._entries["Fasta File"],
+                                            self._entries["Output Path"],
+                                            self._entries["Organism name"],
+                                            self._entries["Database"],
+                                            self._entries["BlastP_SW"],
+                                            app))
+            thread.start()
 
 if __name__ == '__main__':
     root = tk.Tk()
