@@ -9,8 +9,8 @@ import threading
 
 
 
-sys.path.append(os.path.abspath('/Users/klonk/Desktop/Chromoprotein_Strikes_Back/ChromoSearch'))
-sys.path.append(os.path.abspath('/Users/klonk/Desktop/Chromoprotein_Strikes_Back/ChromoSearch/databases'))
+sys.path.append(os.path.abspath(''))
+# sys.path.append(os.path.abspath('databases'))
 from chromosearch import main as ChromoSearch
 
 def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene, entries_database, entries_blastp):
@@ -58,7 +58,7 @@ class Main_app:
         def __init__(self):
             self.fastafile = '/Users/klonk/Desktop/genomes/k12.fasta'
             self.outputfile = '/Users/klonk/Desktop/genomes'
-            self.database = '/Users/klonk/Desktop/Chromoprotein_Strikes_Back/ChromoSearch/databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24'
+            self.database = 'databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24'
             self.parallel = True
             self.match = 3
             self.mismatch = -1

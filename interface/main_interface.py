@@ -23,7 +23,7 @@ if __name__ == "__main__":
 
     # Add the directory containing the module to the system path
     sys.path.append(os.path.abspath('/Users/klonk/Desktop/Chromoprotein_Strikes_Back/ChromoSearch'))
-    sys.path.append(os.path.abspath('/Users/klonk/Desktop/Chromoprotein_Strikes_Back/ChromoSearch/databases'))
+    sys.path.append(os.path.abspath('/Users/klonk/Desktop/Chromoprotein_Strikes_Back/ChromoSearch/databases/chromoproteins_uniprot'))
     from chromosearch import main as ChromoSearch
 
     # Create the main window
