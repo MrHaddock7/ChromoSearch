@@ -35,15 +35,18 @@ def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene,
 #                                                         entries_gene=app._entries["Organism name"],
 #                                                         entries_database=app._entries["Database"])).start()
 
-def select_file(self, entry_field):
+# Function to select a file
+def select_file(entry_field):
+    print("select file")
     file_path = filedialog.askopenfilename()
-    self.entry_field.delete(0, tk.END)
-    self.entry_field.insert(0, file_path)
+    entry_field.delete(0, tk.END)
+    entry_field.insert(0, file_path)
 
 # Function to select a directory
-def select_directory(self, entry_field):
+def select_directory(entry_field):
+    print("select directory")
     directory = filedialog.askdirectory()
-    self.entry_field.delete(0, tk.END)
+    entry_field.delete(0, tk.END)
     entry_field.insert(0, directory)
 
 class RedirectText(object):
@@ -147,6 +150,14 @@ class Main_app:
                 
                 if label_text in ["Fasta File", "Output Path"]:
                     button = tk.Button(root, text="Browse", command=lambda e=entry: select_file(e) if label_text != "Output Path" else select_directory(e))
+                    button.grid(row=idx, column=2, padx=10, pady=5, sticky='ew')
+
+                if label_text == "Fasta File":
+                    button = tk.Button(root, text="Browse", command=lambda e=entry: select_file(e))
+                    button.grid(row=idx, column=2, padx=10, pady=5, sticky='ew')
+                
+                elif label_text == "Output Path":
+                    button = tk.Button(root, text="Browse", command=lambda e=entry: select_directory(e))
                     button.grid(row=idx, column=2, padx=10, pady=5, sticky='ew')
 
         self.text_widget = tk.Text(root, wrap='word', height=10, width=80)
