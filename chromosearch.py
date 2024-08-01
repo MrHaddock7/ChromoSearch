@@ -1,4 +1,4 @@
-## NOTE! This script is meant to be run through the terminal 
+## NOTE! This script is meant to be run through the terminal
 
 import argparse
 import logging
@@ -11,6 +11,11 @@ from scripts.protein_search import protein_blastp_search as pbs
 from scripts.sorter import csv_sorter
 from scripts.sorter import csv_sorter2
 from scripts.DNAtoProtein_prodigal import run_prodigal as DNAtoProtein
+
+## Thanos' code
+
+from scripts.characterize_proteins import dereplicate_highest_score
+from scripts.characterize_proteins import calculate_mass_length
 
 def main(fasta_path, 
          output_path, 
@@ -25,7 +30,8 @@ def main(fasta_path,
          gap_open=-10, 
          gap_extend=-4, 
          blastpnsw=True, 
-         quiet_mode=False):
+         quiet_mode=False,
+         mass_n_length=True):
     
     logging.basicConfig(
         level=logging.DEBUG,
@@ -81,6 +87,13 @@ def main(fasta_path,
 
         csv_sorter2(f'{output_dir}/output_{gene}_smith_waterman.csv', gene, output_dir)
 
+        ## Implementation of Thanos' code
+
+        if mass_n_length:
+            print('mass_n_length started...')
+            dereplicated_results = dereplicate_highest_score('/Users/klonk/Desktop/genomes/k12_pigment_pathway_analysis/output_k12_pigment_pathway_analysis_smith_waterman.csv')
+            calculate_mass_length('/Users/klonk/Desktop/genomes/k12_pigment_pathway_analysis/output_k12_pigment_pathway_analysis_DNAtoProtein.fasta', dereplicated_results, gene, output_dir)
+            print('mass_n_length finished')
     finally:
         if not save_intermediates:
             os.remove(os.path.join(temp_protein_search, f'output_{gene}_protein_search.csv'))
