@@ -43,3 +43,26 @@ def csv_sorter2(input_csv, genome, output):
     except KeyboardInterrupt:
         logger.warning("Data processing interrupted by user")
     logger.debug(f'Exiting csv_sorter2 function')
+
+## Added code
+
+def csv_sort_by(input_csv, genome, output, sort_value_metric):
+    df = pd.read_csv(input_csv)
+    df_sorted = df.sort_values(by='Score', ascending=False)
+    return df_sorted
+
+
+def csv_sorter_final(input_csv, genome, output, sort_value_metric, name_output, cut_off_value=False, greater_than=False, only_sort=False):
+    print('enter csv_sorter_final')
+    df = pd.read_csv(input_csv)
+    df_sorted = df.sort_values(by=sort_value_metric, ascending=False)
+    if not only_sort:
+        if greater_than:
+            df_sorted = df_sorted[df_sorted[sort_value_metric] > float(cut_off_value)]
+        else:
+            df_sorted = df_sorted[df_sorted[sort_value_metric] < float(cut_off_value)]
+    df_sorted.to_csv(f'{output}/output_{genome}_{name_output}.csv', index=False)
+
+
+      
+    

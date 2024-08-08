@@ -10,24 +10,23 @@ def dereplicate_highest_score(df):
 
     df = pd.read_csv(df)
 
-    """
-    Dereplicate the DataFrame by keeping the highest score for each unique 'Name1'.
+    # """
+    # Dereplicate the DataFrame by keeping the highest score for each unique 'Name1'.
     
-    Parameters:
-    df (DataFrame): Input DataFrame with columns 'Name1' and 'Score'.
+    # Parameters:
+    # df (DataFrame): Input DataFrame with columns 'Name1' and 'Score'.
     
-    Returns:
-    DataFrame: Dereplicated DataFrame with the highest score for each 'Name1'.
-    """
-    dataframe = deepcopy(df)
-    sorted_df = dataframe.sort_values(by='Score', ascending=False)
-    deduplicated_df = sorted_df.drop_duplicates(subset='Name1', keep='first').reset_index(drop=True)
-    return deduplicated_df
+    # Returns:
+    # DataFrame: Dereplicated DataFrame with the highest score for each 'Name1'.
+    # """
+    # dataframe = deepcopy(df)
+    # sorted_df = dataframe.sort_values(by='Score', ascending=False)
+    # deduplicated_df = sorted_df.drop_duplicates(subset='Name1', keep='first').reset_index(drop=True)
+    return df
 
 ## Second, calculate statistics
 
 def calculate_mass_length(fasta_loc, df_entry, genome, output):
-    df_output = pd.DataFrame(columns=['Length', 'Normalized_score', 'Mass'])
 
     # Read the FASTA file
     sequences = list(SeqIO.parse(fasta_loc, "fasta"))
@@ -57,6 +56,8 @@ def calculate_mass_length(fasta_loc, df_entry, genome, output):
     df_entry['Length'] = lengths
     df_entry['Normalized_score'] = df_entry['Score'] / df_entry['Length']
     df_entry['Mass'] = masses
+
+    df_entry = df_entry.sort_values(by='Normalized_score', ascending=False)
 
     df_entry.to_csv(f'{output}/mass_and_length_{genome}_sorted_alignment.csv')
 
