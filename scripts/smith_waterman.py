@@ -9,6 +9,8 @@ logger = logging.getLogger(__name__)
 
 def matrix_sw_parall(match, mismatch, gap_open, gap_extend, sequence_pairs):
 
+    ## Used when you want to parallelize the alignment with BLOSUM62 matrix
+
     aligner = PairwiseAligner()
     aligner.mode = 'local'
     aligner.match_score = match        # Match score
@@ -32,6 +34,8 @@ def matrix_sw_parall(match, mismatch, gap_open, gap_extend, sequence_pairs):
 
 
 def raw_sw_parall(match, mismatch, gap_open, gap_extend, sequence_pairs):
+
+    ## Used when you want to parallelize the alignment using scoring system
 
     aligner = PairwiseAligner()
     aligner.mode = 'local'
@@ -132,10 +136,3 @@ def smith_waterman_alignment(output, sequence_pairs, gene_name, parallel=True, m
         logger.warning("Data processing interrupted by user")
 
     logger.debug('Exiting smith_waterman_alignment function')
-
-# if __name__ == "__main__":
-#     pairs = nm('/Users/william/Documents/Github/Chromoproteins_2024/secret/outputs/PT5/output_PT5_DNAtoProtein.fasta', 'secret/outputs/PT5/output_PT5_sorter.csv', 'data/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.fasta')
-    
-#     output_file = "alignment_scores.csv"
-#     smith_waterman_alignment('secret/outputs/test', pairs, 'test', matrix=True)
-#     print(f"Alignment scores saved to '{output_file}'")
