@@ -197,7 +197,7 @@ class Main_app:
                     self._entries["Organism name"],
                     self._entries["Database"],
                     self.blastpSW_var,
-                    self.process_var,
+                    self.process_var.get(),
                     self))
             thread.start()
 

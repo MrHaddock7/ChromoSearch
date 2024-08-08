@@ -61,7 +61,9 @@ def main(fasta_path,
     try:
 
         ## Suggestion: Include all print messages in -q flag
-
+        
+        print(process, "process")
+        print(blastpnsw, "blastpnsw")
         if process:
             print_quiet_mode(f'DNAtoProtein: started...')
             DNAtoProtein(fasta_path, output_dir, gene)
