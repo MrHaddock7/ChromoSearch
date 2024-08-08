@@ -61,7 +61,7 @@ def name_and_sequence_pair(input_genome_fasta, alignment_references, input_datab
                     seq_1 = df.loc[index_1, 'Sequence']
                     seq_2 = df2.loc[index_2, 'Sequence']
                     
-                    final_list.append([(index_1, seq_1), (index_2, seq_2)])
+                    final_list.append([(index_1, str(seq_1)), (index_2, str(seq_2))])
                 
 
             except KeyError as e:
@@ -88,7 +88,7 @@ def name_and_sequence_pair(input_genome_fasta, alignment_references, input_datab
                         count += 1
                         seq_1 = row_1['Sequence']
                         seq_2 = row_2['Sequence']
-                        final_list.append([(index_1, seq_1), (index_2, seq_2)])
+                        final_list.append([(index_1, str(seq_1)), (index_2, str(seq_2))])
 
             except Exception as e:
                 print(f"An error occurred: {e}")
