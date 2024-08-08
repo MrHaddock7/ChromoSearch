@@ -192,13 +192,13 @@ class Main_app:
             print("Currently executing a command, please wait")
         else:
             thread = threading.Thread(target=execute_chromosearch,
-                                    args=(self._entries["Fasta File"],
-                                            self._entries["Output Path"],
-                                            self._entries["Organism name"],
-                                            self._entries["Database"],
-                                            self.blastpSW_var,
-                                            self.process_var,
-                                            self))
+                args=(self._entries["Fasta File"],
+                    self._entries["Output Path"],
+                    self._entries["Organism name"],
+                    self._entries["Database"],
+                    self.blastpSW_var,
+                    self.process_var,
+                    self))
             thread.start()
 
 if __name__ == '__main__':

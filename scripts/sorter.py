@@ -3,64 +3,18 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Load the CSV file into a DataFrame
-# input_file = 'blastp_results.csv'  # Replace with your input file path
-# output_file = 'sorted_output_names.csv'  # Replace with your desired output file path
-
-def csv_sorter(input_csv, genome, output, shortest_sequence=0, e_value=0.05):
-    logger.debug(f'Entering csv_sorter function')
+def csv_sorter(input_csv, genome, output, sort_value_metric, name_output, cut_off_value=False, greater_than=False, only_sort=False):
     try:
-        # Read the CSV file
         df = pd.read_csv(input_csv)
-
-        filtered_df = df[df['evalue'] < e_value]
-        df_sorted = filtered_df.sort_values(by='evalue', ascending=True)
-
-        # Write the sorted DataFrame to a new CSV file
-        df_sorted.to_csv(f'{output}/output_{genome}_sorted_pBLAST.csv', index=False)
-
-        logger.info(f'Results from csv_sorter function are saved in file: output_{genome}_sorted_pBLAST.csv')
-    except Exception as e:
-        logger.error(f'Error in csv_sorter function: {e}')
-    except KeyboardInterrupt:
-        logger.warning("Data processing interrupted by user")
-    logger.debug(f'Exiting csv_sorter function')
-
-def csv_sorter2(input_csv, genome, output):
-    logger.debug(f'Entering csv_sorter2 function')
-    try:
-        # Read the CSV file
-        df = pd.read_csv(input_csv)
-
-        df_sorted = df.sort_values(by='Score', ascending=False)
-
-        # Write the sorted DataFrame to a new CSV file
-        df_sorted.to_csv(f'{output}/output_{genome}_sorted_alignment.csv', index=False)
-
-        logger.info(f'Results from csv_sorter function are saved in file: output_{genome}_sorted_alignment.csv')
+        df_sorted = df.sort_values(by=sort_value_metric, ascending=False)
+        if not only_sort:
+            if greater_than:
+                df_sorted = df_sorted[df_sorted[sort_value_metric] > cut_off_value]
+            else:
+                df_sorted = df_sorted[df_sorted[sort_value_metric] < cut_off_value]
+        logger.info(f'Results from csv_sorter function are saved in file: output_{genome}_{name_output}.csv')
     except Exception as ex:
-        logger.error(f'Error in csv_sorter2 function: {ex}')
-    except KeyboardInterrupt:
-        logger.warning("Data processing interrupted by user")
-    logger.debug(f'Exiting csv_sorter2 function')
-
-## Added code
-
-def csv_sort_by(input_csv, genome, output, sort_value_metric):
-    df = pd.read_csv(input_csv)
-    df_sorted = df.sort_values(by='Score', ascending=False)
-    return df_sorted
-
-
-def csv_sorter_final(input_csv, genome, output, sort_value_metric, name_output, cut_off_value=False, greater_than=False, only_sort=False):
-    print('enter csv_sorter_final')
-    df = pd.read_csv(input_csv)
-    df_sorted = df.sort_values(by=sort_value_metric, ascending=False)
-    if not only_sort:
-        if greater_than:
-            df_sorted = df_sorted[df_sorted[sort_value_metric] > float(cut_off_value)]
-        else:
-            df_sorted = df_sorted[df_sorted[sort_value_metric] < float(cut_off_value)]
+        logger.error(f'Error in csv_sorter function: {ex}')
     df_sorted.to_csv(f'{output}/output_{genome}_{name_output}.csv', index=False)
 
 
