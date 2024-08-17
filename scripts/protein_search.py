@@ -5,14 +5,15 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-def protein_blastp_search(input_sequence, genome, output, input_database):
+def protein_blastp_search(input_sequence, genome, output, input_database, threads):
     logger.debug('Entering protein_blastp_search function')
     # Generate the BLASTP command
     blastp_command = [
         'blastp',
         '-db', input_database,
         '-outfmt', '6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore',
-        '-query', input_sequence
+        '-query', input_sequence,
+        '-num_threads', str(threads)
     ]
 
     output_csv_file = f'{output}/output_{genome}_protein_search.csv'
