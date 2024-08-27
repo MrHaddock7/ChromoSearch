@@ -37,14 +37,12 @@ def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene,
 
 # Function to select a file
 def select_file(entry_field):
-    print("select file")
     file_path = filedialog.askopenfilename()
     entry_field.delete(0, tk.END)
     entry_field.insert(0, file_path)
 
 # Function to select a directory
 def select_directory(entry_field):
-    print("select directory")
     directory = filedialog.askdirectory()
     entry_field.delete(0, tk.END)
     entry_field.insert(0, directory)
