@@ -28,12 +28,6 @@ def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene,
     print("ChromoSearch Complete")
     app.process_in_process = False
     
-# def execute_threading():
-#     print("entered execute threading")
-#     thread = threading.Thread(target=execute_chromosearch(entries_fasta_files=app._entries["Fasta File"],
-#                                                         entries_output_path=app._entries["Output Path"],
-#                                                         entries_gene=app._entries["Organism name"],
-#                                                         entries_database=app._entries["Database"])).start()
 
 # Function to select a file
 def select_file(entry_field):
@@ -136,8 +130,6 @@ class Main_app:
                     self._entries[label_text] = "databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24"  # Store the StringVar instead of the dropdown widget
                 elif selected_option.get() == "Pigment-pathway enzymes":
                     self._entries[label_text] = "databases/pigment_biosynthesis_chromoproteins/uniprotkb_go_manual_0046148_NOT_taxonom_2024_07_01"
-                # else:
-                #     raise ValueError("Invalid argument for the database")
 
             else:
                 entry = tk.Entry(root, width=50, justify='center')
