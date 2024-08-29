@@ -62,30 +62,28 @@ def main(fasta_path,
 
         ## Suggestion: Include all print messages in -q flag
         
-        print(process, "process")
-        print(blastpnsw, "blastpnsw")
         if process:
-            print_quiet_mode(f'DNAtoProtein: started...')
+            print_quiet_mode(f'Identifying candidate proteins in DNA: started...')
             DNAtoProtein(fasta_path, output_dir, gene)
-            print_quiet_mode(f'DNAtoProtein: finished')
+            print_quiet_mode(f'Identifying candidate proteins in DNA: complete')
 
 
-        print_quiet_mode('pbs: started...')
+        print_quiet_mode('Running blastP search: started...')
         pbs(f'{output_dir}/output_{gene}_DNAtoProtein.fasta',
             gene,
             temp_protein_search,
             input_database=f'{database}')
         
-        print_quiet_mode(f'pbs: finished')
+        print_quiet_mode(f'Running blastP search: complete')
 
-        print_quiet_mode(f'csv: started...')
+        print_quiet_mode(f'Removing hits with high E-values: started')
         csv_sorter(input_csv=f'{output_dir}/output_{gene}_protein_search.csv',
                    genome=gene,
                    output=output_dir,
                    sort_value_metric='evalue',
                    cut_off_value=float(0.05),
                    name_output='sorted_pBLAST')
-        print_quiet_mode(f'csv: finished')
+        print_quiet_mode(f'Removing hits with high E-values: complete')
 
         print_quiet_mode(f'smith waterman + name_and_sequence_pair started...')
         sequence_pairs = nm(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', f'{output_dir}/output_{gene}_sorted_pBLAST.csv', input_database_fasta=f'{database}.fasta', blastpsw=blastpnsw)
@@ -100,10 +98,10 @@ def main(fasta_path,
         ## Implementation of Thanos' code
 
         if mass_n_length:
-            print('mass_n_length started...')
+            print('Calculation of mass and length of candidate proteins: started...')
             dereplicated_results = dereplicate_highest_score(f'{output_dir}/output_{gene}_sorted_alignment.csv')
             calculate_mass_length(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', dereplicated_results, gene, output_dir)
-            print('mass_n_length finished')
+            print('Calculation of mass and length of candidate proteins: finished')
     finally:
         if not save_intermediates:
             os.remove(os.path.join(temp_protein_search, f'output_{gene}_protein_search.csv'))
