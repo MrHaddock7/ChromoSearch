@@ -50,3 +50,7 @@ The output data is provided as a csv file found in the output directory as speci
 -Contains the calculated length of the identified candidate protein
 
 -Contains a normalized score for the identified candidate protein, simply defined as the score divided by the length of the protein. 
+
+## An interactive interface for ChromoSearch
+
+For a more user-friendly experience with the ChromoSearch pipeline, you can use our interactive interface by running the main_interface.py script. While this interface offers slightly fewer features compared to the command-line version, it is perfect for users who are less familiar with command-line operations or simply prefer a more intuitive and easy-to-navigate option.
