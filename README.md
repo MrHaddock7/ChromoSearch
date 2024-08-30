@@ -36,3 +36,7 @@ We will then run a pBLAST search of of all the proteins and compare them to a da
 We will use these results and do a smith-waterman alignment on all good hits from the pBLAST run. You can then compare the results from both csv files and see if you have any potential candidates.
 
 ![Visualisation of pipeline](pictures/pipeline4.drawio.svg)
+
+## An interactive interface for ChromoSearch
+
+For a more user-friendly experience with the ChromoSearch pipeline, you can use our interactive interface by running the main_interface.py script. While this interface offers slightly fewer features compared to the command-line version, it is perfect for users who are less familiar with command-line operations or simply prefer a more intuitive and easy-to-navigate option.
