@@ -59,7 +59,7 @@ def calculate_mass_length(fasta_loc, df_entry, genome, output):
 
     df_entry = df_entry.sort_values(by='Normalized_score', ascending=False)
 
-    df_entry.to_csv(f'{output}/mass_and_length_{genome}_sorted_alignment.csv')
+    df_entry.to_csv(f'{output}/final_results_{genome}.csv')
 
 
 
