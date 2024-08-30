@@ -8,9 +8,9 @@ import os
 import threading
 
 
-
+## Adds database access
 sys.path.append(os.path.abspath(''))
-# sys.path.append(os.path.abspath('databases'))
+
 from chromosearch import main as ChromoSearch
 
 def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene, entries_database, entries_blastp, entries_process, app):
@@ -27,24 +27,15 @@ def execute_chromosearch(entries_fasta_files, entries_output_path, entries_gene,
                 )
     print("ChromoSearch Complete")
     app.process_in_process = False
-    
-# def execute_threading():
-#     print("entered execute threading")
-#     thread = threading.Thread(target=execute_chromosearch(entries_fasta_files=app._entries["Fasta File"],
-#                                                         entries_output_path=app._entries["Output Path"],
-#                                                         entries_gene=app._entries["Organism name"],
-#                                                         entries_database=app._entries["Database"])).start()
 
-# Function to select a file
+## Function to select a file
 def select_file(entry_field):
-    print("select file")
     file_path = filedialog.askopenfilename()
     entry_field.delete(0, tk.END)
     entry_field.insert(0, file_path)
 
-# Function to select a directory
+## Function to select a directory
 def select_directory(entry_field):
-    print("select directory")
     directory = filedialog.askdirectory()
     entry_field.delete(0, tk.END)
     entry_field.insert(0, directory)
@@ -62,13 +53,14 @@ class RedirectText(object):
     def flush(self):
         pass
 
+## App object
+
 class Main_app:
     class Arguments:
         def __init__(self):
 
-            ## Arguments for the 
-            self.fastafile = '/Users/klonk/Desktop/genomes/k12.fasta'
-            self.outputfile = '/Users/klonk/Desktop/genomes'
+            ## Arguments for the genome processor, managed by the app
+
             self.database = 'databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24'
             self.parallel = True
             self.match = 3
@@ -87,7 +79,7 @@ class Main_app:
 
         ## Icon 
 
-        # icon = tk.PhotoImage(file='/Users/klonk/Desktop/colorwheel.png')
+        # icon = tk.PhotoImage(file='/Users/klonk/Desktop/iGEM files/colorwheel.png')
         # root.iconphoto(True, icon)
 
         ## Input arguments for chromosearch.py
@@ -103,8 +95,8 @@ class Main_app:
         logger.info('Started a main window')
 
         self._fields = [
-            ("Fasta File", "Path to the fasta file with the whole genome for the strain", self.arguments.fastafile), 
-            ("Output Path", "Path to where to save the output files", self.arguments.outputfile),
+            ("Fasta File", "Path to the fasta file with the whole genome for the strain"), 
+            ("Output Path", "Path to where to save the output files"),
             ("Organism name", "Name of the organism to process"),
             ("Database", "Path to the chromoprotein database", self.arguments.database),
             # ("BLOSUM62 Matrix", "Path to the BLOSUM62 matrix file", DEFAULTS["matrix"]),
@@ -117,6 +109,8 @@ class Main_app:
         ## Attributes relating to the processing of data
 
         self.process_in_process = False
+
+        ## Code for widgets and text
 
         self._entries = {}
 
@@ -134,6 +128,7 @@ class Main_app:
 
                 dropdown = tk.OptionMenu(root, selected_option, *options, command=on_option_selected)
                 dropdown.grid(row=idx, column=1, padx=10, pady=5, sticky='ew')  # Grid instead of pack
+                
                 if selected_option.get() == "Chromoproteins":
                     self._entries[label_text] = "databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24"  # Store the StringVar instead of the dropdown widget
                 elif selected_option.get() == "Pigment-pathway enzymes":
@@ -143,16 +138,13 @@ class Main_app:
 
             else:
                 entry = tk.Entry(root, width=50, justify='center')
-                if default:
-                    entry.insert(0, default[0])
                 entry.grid(row=idx, column=1, padx=10, pady=5, sticky='ew')
                 self._entries[label_text] = entry
-                
-                if label_text in ["Fasta File", "Output Path"]:
-                    button = tk.Button(root, text="Browse", command=lambda e=entry: select_file(e) if label_text != "Output Path" else select_directory(e))
-                    button.grid(row=idx, column=2, padx=10, pady=5, sticky='ew')
 
-                if label_text == "Fasta File":
+                if default:
+                    entry.insert(0, default[0])
+
+                elif label_text == "Fasta File":
                     button = tk.Button(root, text="Browse", command=lambda e=entry: select_file(e))
                     button.grid(row=idx, column=2, padx=10, pady=5, sticky='ew')
                 
@@ -165,11 +157,11 @@ class Main_app:
         self.text_widget.configure(state='disabled')
 
         self.process_var = tk.BooleanVar(value=self.arguments.process)
-        self.process_checkbox = tk.Checkbutton(root, text="Disable DNA to Protein Processing", variable=self.process_var)
+        self.process_checkbox = tk.Checkbutton(root, text="Disable DNA to Protein Processing", variable=not self.process_var)
         self.process_checkbox.grid(row=10, column=0, columnspan=3, padx=10, pady=5, sticky='w')
         
         self.blastpSW_var = tk.BooleanVar(value=self.arguments.blastpnsw)
-        self.blastpSW_checkbox = tk.Checkbutton(root, text="Run blastP and Smith Waterman in parallel", variable=self.blastpSW_var)
+        self.blastpSW_checkbox = tk.Checkbutton(root, text="Run blastP and Smith Waterman sequentially", variable=self.blastpSW_var)
         self.blastpSW_checkbox.grid(row=11, column=0, columnspan=3, padx=10, pady=5, sticky='w')
 
         # Create the process button
