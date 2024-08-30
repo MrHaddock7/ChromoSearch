@@ -16,6 +16,8 @@ from scripts.DNAtoProtein_prodigal import run_prodigal as DNAtoProtein
 from scripts.characterize_proteins import dereplicate_highest_score
 from scripts.characterize_proteins import calculate_mass_length
 
+## main function
+
 def main(fasta_path, 
          output_path, 
          gene, 
@@ -60,7 +62,7 @@ def main(fasta_path,
 
     try:
 
-        ## Suggestion: Include all print messages in -q flag
+        ## Initiation of the pipeline
         
         if process:
             print_quiet_mode(f'Identifying candidate proteins in DNA: started...')
@@ -102,6 +104,7 @@ def main(fasta_path,
             dereplicated_results = dereplicate_highest_score(f'{output_dir}/output_{gene}_sorted_alignment.csv')
             calculate_mass_length(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', dereplicated_results, gene, output_dir)
             print('Calculation of mass and length of candidate proteins: finished')
+
     finally:
         if not save_intermediates:
             os.remove(os.path.join(temp_protein_search, f'output_{gene}_protein_search.csv'))
@@ -110,7 +113,8 @@ def main(fasta_path,
     logger.info(f'Finished processing the {gene} gene')
 
 if __name__ == "__main__":
-    ## Suggestion: We should rewrite some of the helper strings
+
+    ## The code below is only valid if the chromosearch-function is run via the terminal.
 
     parser = argparse.ArgumentParser(description="Process a single genomic data file and perform various bioinformatics tasks.")
     parser.add_argument("fasta_file", help="Path to the fasta file with the whole genome for the strain")
