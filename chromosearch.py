@@ -24,7 +24,7 @@ def main(fasta_path,
          database, 
          process=True, 
          save_intermediates=True, 
-         parallel=True, 
+         threads=1, 
          matrix=True, 
          match=3, 
          mismatch=-1, 
@@ -74,7 +74,7 @@ def main(fasta_path,
         pbs(f'{output_dir}/output_{gene}_DNAtoProtein.fasta',
             gene,
             temp_protein_search,
-            input_database=f'{database}')
+            input_database=f'{database}', threads = threads)
         
         print_quiet_mode(f'Running blastP search: complete')
 
@@ -89,10 +89,9 @@ def main(fasta_path,
 
         print_quiet_mode(f'smith waterman + name_and_sequence_pair started...')
         sequence_pairs = nm(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', f'{output_dir}/output_{gene}_sorted_pBLAST.csv', input_database_fasta=f'{database}.fasta', blastpsw=blastpnsw)
-        
         print_quiet_mode(f'Performing the Smith-Waterman algorithm on {len(sequence_pairs)} sequence pairs...')
 
-        sm(output_dir, gene_name=gene, sequence_pairs=sequence_pairs, parallel=parallel, matrix=matrix, match=match, mismatch=mismatch, gap_open=gap_open, gap_extend=gap_extend)
+        sm(output_dir, gene_name=gene, sequence_pairs=sequence_pairs, threads=threads, matrix=matrix, match=match, mismatch=mismatch, gap_open=gap_open, gap_extend=gap_extend)
         print_quiet_mode(f'smith waterman + name_and_sequence_pair finished')
 
         csv_sorter(f'{output_dir}/output_{gene}_smith_waterman.csv', gene, temp_SW_csv, only_sort=True, sort_value_metric='Score', name_output='sorted_alignment')
@@ -121,7 +120,7 @@ if __name__ == "__main__":
     parser.add_argument("output_path", help="Path to where to save the output files")
     parser.add_argument("gene", help="Name of the gene to process")
     parser.add_argument("-db", "--database", default='databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24', help="Path to the chromoprotein database")
-    parser.add_argument("-p", "--parallel", action="store_false", help="If you want to disable the parallelization")
+    parser.add_argument("-t", "--threads", type = int, default=1, help="Number of threads available to the pipeline. Set to 0 or negative numbers to use all available cores")
     parser.add_argument("-M", "--matrix", action="store_false", help="If you want to disable BLOSUM62 matrix and use standard scores")
     parser.add_argument("--match", type=int, default=3, help="Score for a match")
     parser.add_argument("--mismatch", type=int, default=-1, help="Penalty for a mismatch")
@@ -139,7 +138,6 @@ if __name__ == "__main__":
     gene_argument = args.gene
     database_argument = args.database
     save_intermediates_argument = args.save_intermediates
-    parallel_argument = args.parallel
     matrix_argument = args.matrix
     match_argument = args.match
     mismatch_argument = args.mismatch
@@ -149,6 +147,17 @@ if __name__ == "__main__":
     blastpnsw_argument = args.blastpandsmithwaterman
     quiet_argument = args.quiet
 
+    # check options for threads arg
+    # assign all available cpus
+    if args.threads <= 0:
+        threads = os.cpu_count()
+    elif args.threads > os.cpu_count():
+        raise Exception("Number of threads specified exceeds those available in the system. Please specify a lower count, or run single-threaded")
+    else:
+        threads = args.threads
+
+    if threads == 1:
+        print("You have chosen to run the pipeline using only 1 thread. This might take some time...\n")
 
 
     main(fasta_path=fasta_path_argument, 
@@ -156,7 +165,7 @@ if __name__ == "__main__":
          gene=gene_argument, 
          database=database_argument, 
          process=process_argument, save_intermediates=save_intermediates_argument, 
-         parallel=parallel_argument, matrix=matrix_argument, 
+         threads=threads, matrix=matrix_argument,
          match=match_argument, 
          mismatch=mismatch_argument, 
          gap_open=gap_open_argument, 
