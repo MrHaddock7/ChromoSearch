@@ -94,7 +94,7 @@ def main(fasta_path,
         sm(output_dir, gene_name=gene, sequence_pairs=sequence_pairs, threads=threads, matrix=matrix, match=match, mismatch=mismatch, gap_open=gap_open, gap_extend=gap_extend)
         print_quiet_mode(f'smith waterman + name_and_sequence_pair finished')
 
-        csv_sorter(f'{output_dir}/output_{gene}_smith_waterman.csv', gene, temp_SW_csv, only_sort=True, sort_value_metric='Score', name_output='sorted_alignment')
+        csv_sorter(f'{output_dir}/output_{gene}_smith_waterman.csv', gene, temp_SW_csv, only_sort=True, sort_value_metric='score', name_output='sorted_alignment')
 
         ## Implementation of Thanos' code
 

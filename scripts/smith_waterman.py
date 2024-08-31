@@ -49,7 +49,7 @@ def sequence_pairs_smith_waterman(match, mismatch, gap_open, gap_extend, matrix,
             logger.warning("Data processing interrupted by user.")
 
         # This is the most inefficient data structure ever created
-        results_list.append({'Name1': name1, 'Name2': name2, 'Score': score})
+        results_list.append({'prodigal_protein': name1, 'database_protein': name2, 'score': score})
 
     return results_list
 
@@ -88,7 +88,7 @@ def write_smith_waterman_results(output, gene_name, results_dictonaries):
     with open(f'{output}/output_{gene_name}_smith_waterman.csv', 'w', newline='') as csvfile:
         
         try:
-            fieldnames = ['Name1', 'Name2', 'Score']
+            fieldnames = ['prodigal_protein', 'database_protein', 'score']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             writer.writeheader()
 
