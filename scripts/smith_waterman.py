@@ -107,22 +107,22 @@ def smith_waterman_alignment(output, sequence_pairs, gene_name, match=3, mismatc
 
     result_to_write = []
     try:
-        # Single-threaded mode
-        if threads == 1:
-            logger.debug('Entered single-threaded mode...')
-            result_to_write = sequence_pairs_smith_waterman(match, mismatch, gap_open, gap_extend, sequence_pairs, matrix)
-            
-        else:
-            logger.debug('Entered multi-threaded mode...')
+    # # Single-threaded mode
+    # if threads == 1:
+    #     logger.debug('Entered single-threaded mode...')
+    #     result_to_write = sequence_pairs_smith_waterman(match, mismatch, gap_open, gap_extend, sequence_pairs, matrix)
+        
+    # else:
+    #     logger.debug('Entered multi-threaded mode...')
 
-            # Set the first arguments for the function as static, and map to the batch sequence pairs
-            partial_sequence_pair_smith_waterman = partial(sequence_pairs_smith_waterman, match, mismatch, gap_open, gap_extend, matrix)
-            with futures.ProcessPoolExecutor() as ex:
-                result = list(ex.map(partial_sequence_pair_smith_waterman, batch_sequence_pairs(sequence_pairs, threads)))
-            
-            # flatten result list of lists of dictionaries
-            # Could retain use of a generator if memory is a problem - Unlikely
-            result_to_write = [item for sublist in result for item in sublist]
+        # Set the first arguments for the function as static, and map to the batch sequence pairs
+        partial_sequence_pair_smith_waterman = partial(sequence_pairs_smith_waterman, match, mismatch, gap_open, gap_extend, matrix)
+        with futures.ProcessPoolExecutor() as ex:
+            result = list(ex.map(partial_sequence_pair_smith_waterman, batch_sequence_pairs(sequence_pairs, threads)))
+        
+        # flatten result list of lists of dictionaries
+        # Could retain use of a generator if memory is a problem - Unlikely
+        result_to_write = [item for sublist in result for item in sublist]
 
     except Exception as e:
         logger.error(f'Error in smith_waterman_alignment function: {e}')
