@@ -21,8 +21,8 @@ def dereplicate_highest_score(df):
     # """
     dataframe = deepcopy(df)
     # sorted_df = dataframe.sort_values(by='Score', ascending=False)
-    deduplicated_df = dataframe.drop_duplicates(subset='Name1', keep='first').reset_index(drop=True)
-    return deduplicated_df
+    dereplicated_df = dataframe.drop_duplicates(subset='Name1', keep='first').reset_index(drop=True)
+    return dereplicated_df
 
 ## Second, calculate statistics
 
@@ -59,7 +59,7 @@ def calculate_mass_length(fasta_loc, df_entry, genome, output):
 
     df_entry = df_entry.sort_values(by='Normalized_score', ascending=False)
 
-    df_entry.to_csv(f'{output}/mass_and_length_{genome}_sorted_alignment.csv')
+    df_entry.to_csv(f'{output}/final_results_{genome}.csv')
 
 
 
