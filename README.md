@@ -41,7 +41,7 @@ We will use these results and do a smith-waterman alignment on all good hits fro
 
 The output data is provided as a csv file found in the output directory as specified by the user, ordered by the normalized score for each hit, in descending order. Below, each of columns are explained.
 
--(prodigal_protein), Contains the identified candidate protein ID as provided by prodigal (change Name1) 
+-(prodigal_protein), Contains the identified putitive protein ID as provided by prodigal (change Name1) 
 
 -(database_protein), Contains the protein ID for the protein as provided by from the local database, based on a relevant UniProt query. (change Name2).
 
