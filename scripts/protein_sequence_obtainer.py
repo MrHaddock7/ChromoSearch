@@ -75,8 +75,7 @@ def name_and_sequence_pair(input_genome_fasta, alignment_references, input_datab
         ## Outputs ALL possible pairs of genes and entries in the database.
         ## NOTE! This may be VERY 
         ## computationally intensive for larger databases and/or larger protein
-        ## candidate families.
-
+        ## candidate families. Time complexity O(mxn)
         else:
             logger.info('Paring ALL possible combinations of genes in query and database')
 
