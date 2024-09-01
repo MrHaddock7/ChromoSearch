@@ -41,16 +41,18 @@ We will use these results and do a smith-waterman alignment on all good hits fro
 
 The output data is provided as a csv file found in the output directory as specified by the user, ordered by the normalized score for each hit, in descending order. Below, each of columns are explained.
 
--Contains the identified candidate protein ID as provided by prodigal (change Name1) 
+-(prodigal_protein), Contains the identified candidate protein ID as provided by prodigal (change Name1) 
 
--Contains the protein ID for the protein as provided by from the local database, based on a relevant UniProt query. (change Name2).
+-(database_protein), Contains the protein ID for the protein as provided by from the local database, based on a relevant UniProt query. (change Name2).
 
--Contains a score as provided by the Smith-Waterman local alignment
+-(score), Contains a score as provided by the Smith-Waterman local alignment.
 
--Contains the calculated length of the identified candidate protein
+-(length) Contains the calculated length of the identified candidate protein.
 
--Contains a normalized score for the identified candidate protein, simply defined as the score divided by the length of the protein. 
+-(normalized_score) Contains a normalized score for the identified candidate protein, simply defined as the score divided by the length of the protein. 
+
+-(mass) Contains the estimated mass of the protein based on the protein sequence.
 
 ## An interactive interface for ChromoSearch
 
-For a more user-friendly experience with the ChromoSearch pipeline, you can use our interactive interface by running the main_interface.py script. While this interface offers slightly fewer features compared to the command-line version, it is perfect for users who are less familiar with command-line operations or simply prefer a more intuitive and easy-to-navigate option.
+For a more user-friendly experience with the ChromoSearch pipeline, you can use our interactive interface by running the main_interface.py script. While this interface offers slightly less options and many settings are fixed compared to the command-line version, it is perfect for users who are less familiar with command-line operations or simply prefer a more intuitive and easy-to-navigate option. 
