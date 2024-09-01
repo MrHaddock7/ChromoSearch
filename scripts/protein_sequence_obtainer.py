@@ -54,15 +54,11 @@ def name_and_sequence_pair(input_genome_fasta, alignment_references, input_datab
             logger.info('Paring from BlastP results')
 
             try:
-                for i in range(len(sorted_output_df)):
-                    index_1 = sorted_output_df.iloc[i, 0]
-                    index_2 = sorted_output_df.iloc[i, 1]
- 
-                    seq_1 = df.loc[index_1, 'Sequence']
-                    seq_2 = df2.loc[index_2, 'Sequence']
-                    
-                    final_list.append([(index_1, str(seq_1)), (index_2, str(seq_2))])
-                
+                final_list = [
+                    [(sorted_output_df.iloc[i, 0], str(df.loc[sorted_output_df.iloc[i, 0], 'Sequence'])),
+                    (sorted_output_df.iloc[i, 1], str(df2.loc[sorted_output_df.iloc[i, 1], 'Sequence']))]
+                    for i in range(len(sorted_output_df))
+                ]
 
             except KeyError as e:
                 print(f"KeyError encountered: {e}")
@@ -76,6 +72,9 @@ def name_and_sequence_pair(input_genome_fasta, alignment_references, input_datab
         ## NOTE! This may be VERY 
         ## computationally intensive for larger databases and/or larger protein
         ## candidate families. Time complexity O(mxn)
+ 
+        ### This code contains redundant combinations and may be optimized
+
         else:
             logger.info('Paring ALL possible combinations of genes in query and database')
 
