@@ -22,6 +22,7 @@ def dereplicate_highest_score(df):
     dataframe = deepcopy(df)
     # sorted_df = dataframe.sort_values(by='Score', ascending=False)
     dereplicated_df = dataframe.drop_duplicates(subset='prodigal_protein', keep='first').reset_index(drop=True)
+    dereplicated_df
     return dereplicated_df
 
 ## Second, calculate statistics
@@ -59,7 +60,7 @@ def calculate_mass_length(fasta_loc, df_entry, genome, output):
 
     df_entry = df_entry.sort_values(by='Normalized_score', ascending=False)
 
-    df_entry.to_csv(f'{output}/final_results_{genome}.csv')
+    df_entry.to_csv(f'{output}/final_results_{genome}.csv', index=False)
 
 
 
