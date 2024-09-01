@@ -51,7 +51,7 @@ The output data is provided as a csv file found in the output directory as speci
 
 -(normalized_score) Contains a normalized score for the identified candidate protein, simply defined as the score divided by the length of the protein. 
 
--(mass) Contains the estimated mass of the protein based on the protein sequence-.
+-(mass) Contains the estimated mass of the protein based on the protein sequence.
 
 ## An interactive interface for ChromoSearch
 
