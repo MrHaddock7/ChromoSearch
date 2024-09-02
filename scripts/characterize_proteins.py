@@ -20,7 +20,7 @@ def dereplicate_highest_score(df):
     # DataFrame: Dereplicated DataFrame with the highest score for each 'Name1'.
     # """
     dataframe = deepcopy(df)
-    # sorted_df = dataframe.sort_values(by='Score', ascending=False)
+    sorted_df = dataframe.sort_values(by='Score', ascending=False)
     dereplicated_df = dataframe.drop_duplicates(subset='Name1', keep='first').reset_index(drop=True)
     return dereplicated_df
 
