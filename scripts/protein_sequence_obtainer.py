@@ -4,6 +4,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 def name_and_sequence_pair(input_genome_fasta, alignment_references, input_database_fasta, blastpsw=True):
+    
     logger.debug('Entering pname_and_sequence_pair function')
     def parse_fasta_file(file_path): # Input, path to FASTA file you want to parse
         logger.debug('Entering parse_fasta_file function')

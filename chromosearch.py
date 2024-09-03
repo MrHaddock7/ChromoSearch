@@ -88,7 +88,7 @@ def main(fasta_path,
         print_quiet_mode(f'Removing hits with high E-values: complete')
 
         print_quiet_mode(f'smith waterman + name_and_sequence_pair started...')
-        sequence_pairs = nm(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', f'{output_dir}/output_{gene}_sorted_pBLAST.csv', input_database_fasta=f'{database}.fasta', blastpsw=blastpnsw)
+        sequence_pairs = nm(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', f'{output_dir}/output_{gene}_sorted_pBLAST.csv', input_database_fasta=f'{database}', blastpsw=blastpnsw)
         print_quiet_mode(f'Performing the Smith-Waterman algorithm on {len(sequence_pairs)} sequence pairs...')
 
         sm(output_dir, gene_name=gene, sequence_pairs=sequence_pairs, threads=threads, matrix=matrix, match=match, mismatch=mismatch, gap_open=gap_open, gap_extend=gap_extend)
@@ -119,7 +119,7 @@ if __name__ == "__main__":
     parser.add_argument("fasta_file", help="Path to the fasta file with the whole genome for the strain")
     parser.add_argument("output_path", help="Path to where to save the output files")
     parser.add_argument("gene", help="Name of the gene to process")
-    parser.add_argument("-db", "--database", default='databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24', help="Path to the chromoprotein database")
+    parser.add_argument("-db", "--database", default='databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.fasta', help="Path to the chromoprotein database")
     parser.add_argument("-t", "--threads", type = int, default=1, help="Number of threads available to the pipeline. Set to 0 or negative numbers to use all available cores")
     parser.add_argument("-M", "--matrix", action="store_false", help="If you want to disable BLOSUM62 matrix and use standard scores")
     parser.add_argument("--match", type=int, default=3, help="Score for a match")
