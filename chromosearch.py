@@ -118,13 +118,14 @@ def main(fasta_path,
 
 if __name__ == "__main__":
 
+
     ## The code below is only valid if the chromosearch-function is run via the terminal.
 
     parser = argparse.ArgumentParser(description="Process a single genomic data file and perform various bioinformatics tasks.")
     parser.add_argument("fasta_file", help="Path to the fasta file with the whole genome for the strain")
     parser.add_argument("output_path", help="Path to where to save the output files")
     parser.add_argument("gene", help="Name of the gene to process")
-    parser.add_argument("-db", "--database", default='databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24', help="Path to the chromoprotein database")
+    parser.add_argument("-db", "--database", default='databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.fasta', help="Path to the chromoprotein database")
     parser.add_argument("-t", "--threads", type = int, default=1, help="Number of threads available to the pipeline. Set to 0 or negative numbers to use all available cores")
     parser.add_argument("-M", "--matrix", action="store_false", help="If you want to disable BLOSUM62 matrix and use standard scores")
     parser.add_argument("--match", type=int, default=3, help="Score for a match")
