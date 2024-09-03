@@ -93,7 +93,7 @@ def main(fasta_path,
         print_quiet_mode(f'Removing hits with high E-values: complete')
 
         print_quiet_mode(f'smith waterman + name_and_sequence_pair started...')
-        sequence_pairs = nm(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', f'{temp_protein_search}/output_{gene}_sorted_pBLAST.csv', input_database_fasta=f'{database}.fasta', blastpsw=blastpnsw)
+        sequence_pairs = nm(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', f'{temp_protein_search}/output_{gene}_sorted_pBLAST.csv', input_database_fasta=f'{database}', blastpsw=blastpnsw)
         print_quiet_mode(f'Performing the Smith-Waterman algorithm on {len(sequence_pairs)} sequence pairs...')
 
         sm(temp_SW_csv, gene_name=gene, sequence_pairs=sequence_pairs, threads=threads, matrix=matrix, match=match, mismatch=mismatch, gap_open=gap_open, gap_extend=gap_extend)
