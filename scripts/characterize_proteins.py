@@ -26,7 +26,7 @@ def dereplicate_highest_score(df):
 
 ## Second, calculate statistics
 
-def calculate_mass_length(fasta_loc, df_entry, genome, output):
+def calculate_mass_length(fasta_loc, df_entry, pblast_file_path, genome, output):
 
     # Read the FASTA file
     sequences = list(SeqIO.parse(fasta_loc, "fasta"))
@@ -56,6 +56,14 @@ def calculate_mass_length(fasta_loc, df_entry, genome, output):
     df_entry['Length'] = lengths
     df_entry['Normalized_score'] = df_entry['Score'] / df_entry['Length']
     df_entry['Mass'] = masses
+
+    pblast_df = pd.read_csv(pblast_file_path)
+    
+    # Rename columns in the pBLAST DataFrame for merging
+    pblast_df.rename(columns={'qseqid': 'Name1', 'sseqid': 'Name2'}, inplace=True)
+
+    # Merge the DataFrames on 'Name1' and 'Name2'
+    df_entry = pd.merge(df_entry, pblast_df[['Name1', 'Name2', 'evalue']], on=['Name1', 'Name2'], how='left')
 
     df_entry = df_entry.sort_values(by='Normalized_score', ascending=False)
 

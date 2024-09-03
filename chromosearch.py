@@ -106,7 +106,7 @@ def main(fasta_path,
         if mass_n_length:
             print('Calculation of mass and length of candidate proteins: started...')
             dereplicated_results = dereplicate_highest_score(f'{temp_SW_csv}/output_{gene}_sorted_alignment.csv')
-            calculate_mass_length(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', dereplicated_results, gene, output_dir)
+            calculate_mass_length(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', dereplicated_results, f'{temp_protein_search}/output_{gene}_sorted_pBLAST.csv', gene, output_dir)
             print('Calculation of mass and length of candidate proteins: finished')
 
     finally:
