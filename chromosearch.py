@@ -113,6 +113,7 @@ def main(fasta_path,
 
 if __name__ == "__main__":
 
+
     ## The code below is only valid if the chromosearch-function is run via the terminal.
 
     parser = argparse.ArgumentParser(description="Process a single genomic data file and perform various bioinformatics tasks.")

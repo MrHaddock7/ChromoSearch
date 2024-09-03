@@ -7,9 +7,7 @@ import csv
 
 logger = logging.getLogger(__name__)
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+
 
 def make_blast_protein_database(input_database):
     """
@@ -52,7 +50,6 @@ def make_blast_protein_database(input_database):
         
         # Log the output and error messages
         logger.info(result.stdout)
-        logger.error(result.stderr)
         
         logger.info(f"Protein BLAST database created successfully in temporary directory + prefix: {db_path}")
 
