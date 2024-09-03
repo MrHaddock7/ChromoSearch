@@ -1,0 +1,11 @@
+name: chromosearch
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - biopython=1.84
+  - blast=2.16.0
+  - pandas=2.2.2
+  - prodigal=2.6.3
+  - python=3.12.5

@@ -2,6 +2,34 @@
 
 This is a pipeline that can be used to find matches of chromoproteins or pigment creating enzymes in a genome. This could be used as a first step when looking for the source of a color in a organism.
 
+# Installation
+
+## Conda
+
+The recommended method of installation is through the environment.yml file found in the base directory. Conda will automatically solve all requirements as necessary.
+
+To install:
+
+```
+git clone https://github.com/MrHaddock7/ChromoSearch.git
+conda env create -f environment.yml
+```
+
+## Manual
+
+If the necessary packages are installed and available in the working environment, then the repository can be cloned as is.
+
+ChromoSearch has been tested up to now with the following package versions:
+
+```
+python: 3.12.5
+pandas: 2.2.2
+biopython: 1.84
+blast: 2.16.0
+prodigal: 2.6.3
+```
+
+
 ## How to use
 
 If you want to, you could start a virtual environment to run the pipeline on.
