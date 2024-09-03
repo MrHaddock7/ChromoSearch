@@ -47,14 +47,19 @@ def main(fasta_path,
     logger.info(f'{database}')
 
     output_dir = f'{output_path}/{gene}'
+    temp_output = f'temp/{gene}'
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
         logger.info(f'Created directory: {output_dir}')
 
+    if not os.path.exists(temp_output):
+        os.makedirs(temp_output)
+        logger.info(f'Created directory: {temp_output}')
+
 
     # if save_intermediates:
-    temp_protein_search = os.path.join(output_dir)
-    temp_SW_csv = os.path.join(output_dir)
+    temp_protein_search = os.path.join(temp_output)
+    temp_SW_csv = os.path.join(temp_output)
 
     def print_quiet_mode(message):
         if not quiet_mode:
@@ -79,29 +84,29 @@ def main(fasta_path,
         print_quiet_mode(f'Running blastP search: complete')
 
         print_quiet_mode(f'Removing hits with high E-values: started')
-        csv_sorter(input_csv=f'{output_dir}/output_{gene}_protein_search.csv',
+        csv_sorter(input_csv=f'{temp_protein_search}/output_{gene}_protein_search.csv',
                    genome=gene,
-                   output=output_dir,
+                   output=temp_protein_search,
                    sort_value_metric='evalue',
                    cut_off_value=float(0.05),
                    name_output='sorted_pBLAST')
         print_quiet_mode(f'Removing hits with high E-values: complete')
 
         print_quiet_mode(f'smith waterman + name_and_sequence_pair started...')
-        sequence_pairs = nm(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', f'{output_dir}/output_{gene}_sorted_pBLAST.csv', input_database_fasta=f'{database}', blastpsw=blastpnsw)
+        sequence_pairs = nm(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', f'{temp_protein_search}/output_{gene}_sorted_pBLAST.csv', input_database_fasta=f'{database}.fasta', blastpsw=blastpnsw)
         print_quiet_mode(f'Performing the Smith-Waterman algorithm on {len(sequence_pairs)} sequence pairs...')
 
-        sm(output_dir, gene_name=gene, sequence_pairs=sequence_pairs, threads=threads, matrix=matrix, match=match, mismatch=mismatch, gap_open=gap_open, gap_extend=gap_extend)
+        sm(temp_SW_csv, gene_name=gene, sequence_pairs=sequence_pairs, threads=threads, matrix=matrix, match=match, mismatch=mismatch, gap_open=gap_open, gap_extend=gap_extend)
         print_quiet_mode(f'smith waterman + name_and_sequence_pair finished')
 
-        csv_sorter(f'{output_dir}/output_{gene}_smith_waterman.csv', gene, temp_SW_csv, only_sort=True, sort_value_metric='Score', name_output='sorted_alignment')
+        csv_sorter(f'{temp_SW_csv}/output_{gene}_smith_waterman.csv', gene, temp_SW_csv, only_sort=True, sort_value_metric='Score', name_output='sorted_alignment')
 
-        ## Implementation of Thanos' code
+        ## Implementation of normalization code
 
         if mass_n_length:
             print('Calculation of mass and length of candidate proteins: started...')
-            dereplicated_results = dereplicate_highest_score(f'{output_dir}/output_{gene}_sorted_alignment.csv')
-            calculate_mass_length(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', dereplicated_results, gene, output_dir)
+            dereplicated_results = dereplicate_highest_score(f'{temp_SW_csv}/output_{gene}_sorted_alignment.csv')
+            calculate_mass_length(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', dereplicated_results, f'{temp_protein_search}/output_{gene}_sorted_pBLAST.csv', gene, output_dir)
             print('Calculation of mass and length of candidate proteins: finished')
 
     finally:

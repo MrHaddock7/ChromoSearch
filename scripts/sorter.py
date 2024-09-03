@@ -10,8 +10,10 @@ def csv_sorter(input_csv, genome, output, sort_value_metric, name_output, cut_of
         if not only_sort:
             if greater_than:
                 df_sorted = df_sorted[df_sorted[sort_value_metric] > cut_off_value]
+                df_sorted = df_sorted.sort_values(by=sort_value_metric, ascending=True)
             else:
                 df_sorted = df_sorted[df_sorted[sort_value_metric] < cut_off_value]
+                df_sorted = df_sorted.sort_values(by=sort_value_metric, ascending=True)
         logger.info(f'Results from csv_sorter function are saved in file: output_{genome}_{name_output}.csv')
     except Exception as ex:
         logger.error(f'Error in csv_sorter function: {ex}')

@@ -4,6 +4,7 @@ __pycache__/
 /testing/
 # C extensions
 *.so
+temp/*
 
 # Distribution / packaging
 .Python
@@ -208,3 +209,4 @@ Backup[ ]of[ ]*.pages/
 Backup[ ]of[ ]*.key/
 Backup[ ]of[ ]*.numbers/
 data/.DS_Store
+chromosearch.sh
