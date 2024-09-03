@@ -4,6 +4,7 @@ __pycache__/
 /testing/
 # C extensions
 *.so
+temp/*
 
 # Distribution / packaging
 .Python
