@@ -90,6 +90,24 @@ def name_and_sequence_pair(input_genome_fasta, alignment_references, input_datab
 
             except Exception as e:
                 print(f"An error occurred: {e}")
+
+        ### This code might be more efficient since it avoid repeataing matches.
+
+        # else:
+        #     logger.info('Paring ALL possible combinations of genes in query and database')
+
+        #     final_list = []
+        #     try:
+        #         start_index = 0
+        #         for index_1, row_1 in df.iterrows():
+        #             for index_2, row_2 in df2.iloc[start_index:].iterrows():
+        #                 start_index += 1
+        #                 seq_1 = row_1['Sequence']
+        #                 seq_2 = row_2['Sequence']
+        #                 final_list.append([(index_1, str(seq_1)), (index_2, str(seq_2))])
+
+        #     except Exception as e:
+        #         print(f"An error occurred: {e}")
     
             
 
