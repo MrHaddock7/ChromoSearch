@@ -8,7 +8,10 @@ import seaborn as sns
 import scipy.stats as stats
 import statsmodels.stats.multitest as multitest
 
-def statistics_calculation(final_results_file, save_loc, plot_dpi = 600, multiple_correction_method = 'fdr_by'):
+
+def statistics_calculation(
+    final_results_file, save_loc, plot_dpi=600, multiple_correction_method="fdr_bh"
+):
     """Performs the statistical analysis for the pipeline.
 
     Args:
@@ -19,8 +22,8 @@ def statistics_calculation(final_results_file, save_loc, plot_dpi = 600, multipl
     """
 
     # Load 'final' data and extract normalized scores
-    df_final_results = pd.read_csv(final_results_file, sep = ",")
-    df_final_results.drop(['Unnamed: 0', 'evalue'], axis =1, inplace= True)
+    df_final_results = pd.read_csv(final_results_file, sep=",")
+    df_final_results.drop(["Unnamed: 0", "evalue"], axis=1, inplace=True)
 
     scores = df_final_results["Normalized_score"].to_numpy()
 
@@ -32,24 +35,23 @@ def statistics_calculation(final_results_file, save_loc, plot_dpi = 600, multipl
     df_final_results["Robust_Zscores"] = calculate_robust_z_scores(scores)
 
     # Fit gumbel curve to final normalized scores
-
     gumbel_params = fit_gumbel(scores, save_loc, plot_dpi)
 
     # Calculate corrected p-values and save as results column
-    df_final_results["Corrected_pvalues"] = calculate_gumbel_p_values(scores, gumbel_params, multiple_correction_method)
-
+    df_final_results["Corrected_pvalues"] = calculate_gumbel_p_values(
+        scores, gumbel_params, multiple_correction_method
+    )
 
     # save the final dataframe
 
     df_final_results.to_csv(save_loc + "final_results.csv")
 
-    print(f"Finished statistical analysis and saved results in {save_loc}" )
+    print(f"Finished statistical analysis and saved results in {save_loc}")
 
-    return 
+    return
 
 
-
-def save_normalized_histogram(scores, save_path, plot_dpi = 600):
+def save_normalized_histogram(scores, save_path, plot_dpi=600):
     """Create and save a normalized histogram of the normalized alignment scores, with a KDE estimator line.
 
     Args:
@@ -58,43 +60,50 @@ def save_normalized_histogram(scores, save_path, plot_dpi = 600):
         plot_dpi (int, optional): DPI quality of saved plots. Defaults to 600.
 
     Returns:
-            Boolean: True for successfully creating and saving the histogram, False for any failure to do so. 
+            Boolean: True for successfully creating and saving the histogram, False for any failure to do so.
 
 
     """
 
     print("Creating and saving histogram of normalized scores for final results...")
     try:
-        hist_plot = sns.histplot(scores,
-                                stat = "density", kde = True,
-                                label="Kernel Density Estimator")
+        hist_plot = sns.histplot(
+            scores, stat="density", kde=True, label="Kernel Density Estimator"
+        )
 
         hist_plot.set_title("Histogram plot of Normalized scores")
         hist_plot.set_xlabel("Normalized Alignment Scores")
         hist_plot.legend()
 
         # Create a custom legend for the KDE line
-        kde_line = hist_plot.lines[0]  # Typically, the KDE line is the first line object in the plot
+        kde_line = hist_plot.lines[
+            0
+        ]  # Typically, the KDE line is the first line object in the plot
 
         # Create a legend with a line style
-        legend_lines = [Line2D([0], [0], 
-                        color=kde_line.get_color(), 
-                        lw=2, label= "Kernel Density Estimator")]
-        
-        hist_plot.legend(handles=legend_lines, loc='best')
+        legend_lines = [
+            Line2D(
+                [0],
+                [0],
+                color=kde_line.get_color(),
+                lw=2,
+                label="Kernel Density Estimator",
+            )
+        ]
+
+        hist_plot.legend(handles=legend_lines, loc="best")
 
         plot_name = "Histogram_normalized_scores.png"
-        plt.savefig(save_path + plot_name, dpi = plot_dpi)
+        plt.savefig(save_path + plot_name, dpi=plot_dpi)
 
         plt.close()
 
         return True
-    
+
     except Exception as ee:
         print(f"Saving histogram of Normalized scores failed with:{ee}")
 
         return False
-
 
 
 def calculate_robust_z_scores(scores):
@@ -110,15 +119,17 @@ def calculate_robust_z_scores(scores):
     print("Calculating robust Z-scores...")
 
     median = np.median(scores)
-    mad = np.median(np.abs(scores - median)) * 1.4826 # Normalize to be similar to normal Z-scores, assumes normality of data
-
+    mad = (
+        np.median(np.abs(scores - median)) * 1.4826
+    )  # Normalize to be similar to normal Z-scores, assumes normality of data
 
     if mad == 0:
         # Avoid division by zero, return inf in this case
 
-        print("WARNING: Mean Absolute Deviation computed as '0', please check the normalized scores.")
+        print(
+            "WARNING: Mean Absolute Deviation computed as '0', please check the normalized scores."
+        )
         return np.inf
-    
 
     # Calculation of robust Z-scores
     z_scores = (scores - median) / mad
@@ -126,12 +137,9 @@ def calculate_robust_z_scores(scores):
     print("Finished calculating robust Z-scores")
 
     return z_scores
-    
-    
 
 
-
-def fit_gumbel(scores,save_loc, plot_dpi = 600):
+def fit_gumbel(scores, save_loc, plot_dpi=600):
     """Fits the gumbel distribution to all of the Normalized scores.
     Also creates and saves plots meant to check the success of the fit.
 
@@ -174,17 +182,17 @@ def calculate_gumbel_p_values(scores, params, multiple_correction_method):
     # Calculate the p-values (1 - CDF)
     # This assumes a one-tailed test, ergo we are only interested in high scores
     p_values = 1 - cdf_values
-    
-    
+
     from statsmodels.stats.multitest import multipletests
-    _, corrected_p_values, _, _ = multipletests(p_values, method= multiple_correction_method)
-    
+
+    _, corrected_p_values, _, _ = multipletests(
+        p_values, method=multiple_correction_method
+    )
+
     return corrected_p_values
 
-    
 
-    
-def plot_and_save_gumbel_fit(scores, params, save_loc, plot_dpi = 600):
+def plot_and_save_gumbel_fit(scores, params, save_loc, plot_dpi=600):
     """Create and save a normalized histogram of the alignment scores, in comparison to the Gumbel fit. Good for an initial check.
 
     Args:
@@ -194,9 +202,8 @@ def plot_and_save_gumbel_fit(scores, params, save_loc, plot_dpi = 600):
         plot_dpi (int, optional): DPI quality of saved plots. Defaults to 600.
 
     Returns:
-        Boolean: True for successfully creating and saving the histogram, False for any failure to do so. 
+        Boolean: True for successfully creating and saving the histogram, False for any failure to do so.
     """
-
 
     try:
         # Generate the distribution for gumbel
@@ -205,21 +212,23 @@ def plot_and_save_gumbel_fit(scores, params, save_loc, plot_dpi = 600):
         pdf_fitted = stats.gumbel_r.pdf(x, loc=mu, scale=beta)
 
         # Plot the histogram of your scores
-        plt.hist(scores, density=True, alpha=0.6, color='blue', label='Histogram of scores')
+        plt.hist(
+            scores, density=True, alpha=0.6, color="blue", label="Histogram of scores"
+        )
 
         # Plot the fitted Gumbel PDF
-        plt.plot(x, pdf_fitted, 'r-', lw=2, label='Fitted Gumbel PDF')
+        plt.plot(x, pdf_fitted, "r-", lw=2, label="Fitted Gumbel PDF")
 
         # Add labels and title
-        plt.title('Fitted Gumbel Distribution to Alignment Scores')
-        plt.xlabel('Normalized Alignment Score')
-        plt.ylabel('Density')
+        plt.title("Fitted Gumbel Distribution to Alignment Scores")
+        plt.xlabel("Normalized Alignment Score")
+        plt.ylabel("Density")
         plt.legend()
 
         plot_name = "Gumbel_fit_histogram.png"
-        plt.savefig(save_loc + plot_name, dpi = plot_dpi)
+        plt.savefig(save_loc + plot_name, dpi=plot_dpi)
         plt.close()
-        
+
         return True
 
     except Exception as ee:
@@ -227,9 +236,9 @@ def plot_and_save_gumbel_fit(scores, params, save_loc, plot_dpi = 600):
         return False
 
 
-def save_qq_plot_for_gumbel_fit(scores, params, save_loc, plot_dpi = 600):
+def save_qq_plot_for_gumbel_fit(scores, params, save_loc, plot_dpi=600):
     """Generates a Q-Q plot for the Gumbel fit. This is the main plot to
-      consult in order to determine if the fit is successful. Note that 
+      consult in order to determine if the fit is successful. Note that
       if the pipeline actually produced a positive hit, that will show as a
       deviation in the higher scores.
 
@@ -245,17 +254,15 @@ def save_qq_plot_for_gumbel_fit(scores, params, save_loc, plot_dpi = 600):
 
     try:
         stats.probplot(scores, dist="gumbel_r", sparams=params, plot=plt)
-        plt.title('Q-Q Plot for Gumbel Fit against Normalized scores')
+        plt.title("Q-Q Plot for Gumbel Fit against Normalized scores")
 
         plot_name = "QQ_plot_gumbel_fit.png"
-        plt.savefig(save_loc + plot_name, dpi = plot_dpi)
+        plt.savefig(save_loc + plot_name, dpi=plot_dpi)
         plt.close()
 
         return True
-    
+
     except Exception as ee:
 
         print(f"Saving histogram for Gumbel fit failed with:{ee}")
         return False
-    
-    
