@@ -36,6 +36,7 @@ def main(
     blastpnsw=True,
     quiet_mode=False,
     mass_n_length=True,
+    multiple_test_correction="fdr_bh",
 ):
 
     logging.basicConfig(
@@ -159,7 +160,9 @@ def main(
 
         # TODO: add support for changing plot_dpi and multiple_correction variables through the command line
         statistics_calculation(
-            f"{output_dir}/final_results_{gene}.csv", statistics_directory
+            f"{output_dir}/final_results_{gene}.csv",
+            statistics_directory,
+            multiple_test_correction,
         )
 
     finally:
@@ -236,6 +239,26 @@ if __name__ == "__main__":
         help="Quiets the text-outputs of the ChromoSearch",
     )
 
+    # Argument for the multiple test correction method used by statistics.py
+    parser.add_argument(
+        "--mutliple-correction",
+        type=str,
+        default="fdr_bh",
+        choices=[
+            "bonferroni",
+            "sidak",
+            "holm-sidak",
+            "holm",
+            "simes-hochberg",
+            "hommel",
+            "fdr_bh",
+            "fdr_by",
+            "fdr_tsbh",
+            "fdr_tsbky",
+        ],
+        help='Method used to correct p-values for multiple testing. Available methods: "bonferroni", "sidak", "holm-sidak", "holm", "simes-hochberg", "hommel", "fdr_bh", "fdr_by", "fdr_tsbh", "fdr_tsbky" Default:  Benjamini-Hochberg.',
+    )
+
     args = parser.parse_args()
 
     fasta_path_argument = args.fasta_file
@@ -251,6 +274,7 @@ if __name__ == "__main__":
     process_argument = args.process
     blastpnsw_argument = args.blastpandsmithwaterman
     quiet_argument = args.quiet
+    mutliple_test_correction = args.mutliple_correction
 
     # check options for threads arg
     # assign all available cpus
@@ -283,4 +307,5 @@ if __name__ == "__main__":
         gap_extend=gap_extend_argument,
         blastpnsw=blastpnsw_argument,
         quiet_mode=quiet_argument,
+        multiple_test_correction=mutliple_test_correction,
     )

@@ -10,7 +10,7 @@ import statsmodels.stats.multitest as multitest
 
 
 def statistics_calculation(
-    final_results_file, save_loc, plot_dpi=600, multiple_correction_method="fdr_bh"
+    final_results_file, save_loc, multiple_correction_method, plot_dpi=600
 ):
     """Performs the statistical analysis for the pipeline.
 
