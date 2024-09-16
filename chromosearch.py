@@ -10,6 +10,7 @@ from scripts.smith_waterman import smith_waterman_alignment as sm
 from scripts.protein_search import protein_blastp_search as pbs
 from scripts.sorter import csv_sorter
 from scripts.DNAtoProtein_prodigal import run_prodigal as DNAtoProtein
+from scripts.statistics import statistics_calculation
 
 ## Thanos' code
 
@@ -107,7 +108,20 @@ def main(fasta_path,
             print('Calculation of mass and length of candidate proteins: started...')
             dereplicated_results = dereplicate_highest_score(f'{temp_SW_csv}/output_{gene}_sorted_alignment.csv')
             calculate_mass_length(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', dereplicated_results, f'{temp_protein_search}/output_{gene}_sorted_pBLAST.csv', gene, output_dir)
+
             print('Calculation of mass and length of candidate proteins: finished')
+
+        # Statistical analysis - thanos
+        # ==================================================================================================================
+
+        # Create directory for results
+        statistics_directory = f'{output_dir}/Statistical_analysis/'
+
+        os.makedirs(statistics_directory, exist_ok=True)
+
+
+        # TODO: add support for changing plot_dpi and multiple_correction variables through the command line
+        statistics_calculation(f'{output_dir}/final_results_{gene}.csv', statistics_directory)
 
     finally:
         if not save_intermediates:
