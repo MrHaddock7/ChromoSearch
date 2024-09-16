@@ -10,6 +10,7 @@ from scripts.smith_waterman import smith_waterman_alignment as sm
 from scripts.protein_search import protein_blastp_search as pbs
 from scripts.sorter import csv_sorter
 from scripts.DNAtoProtein_prodigal import run_prodigal as DNAtoProtein
+from scripts.statistics import statistics_calculation
 
 ## Thanos' code
 
@@ -47,14 +48,19 @@ def main(fasta_path,
     logger.info(f'{database}')
 
     output_dir = f'{output_path}/{gene}'
+    temp_output = f'temp/{gene}'
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
         logger.info(f'Created directory: {output_dir}')
 
+    if not os.path.exists(temp_output):
+        os.makedirs(temp_output)
+        logger.info(f'Created directory: {temp_output}')
+
 
     # if save_intermediates:
-    temp_protein_search = os.path.join(output_dir)
-    temp_SW_csv = os.path.join(output_dir)
+    temp_protein_search = os.path.join(temp_output)
+    temp_SW_csv = os.path.join(temp_output)
 
     def print_quiet_mode(message):
         if not quiet_mode:
@@ -79,30 +85,43 @@ def main(fasta_path,
         print_quiet_mode(f'Running blastP search: complete')
 
         print_quiet_mode(f'Removing hits with high E-values: started')
-        csv_sorter(input_csv=f'{output_dir}/output_{gene}_protein_search.csv',
+        csv_sorter(input_csv=f'{temp_protein_search}/output_{gene}_protein_search.csv',
                    genome=gene,
-                   output=output_dir,
+                   output=temp_protein_search,
                    sort_value_metric='evalue',
                    cut_off_value=float(0.05),
                    name_output='sorted_pBLAST')
         print_quiet_mode(f'Removing hits with high E-values: complete')
 
         print_quiet_mode(f'smith waterman + name_and_sequence_pair started...')
-        sequence_pairs = nm(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', f'{output_dir}/output_{gene}_sorted_pBLAST.csv', input_database_fasta=f'{database}.fasta', blastpsw=blastpnsw)
+        sequence_pairs = nm(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', f'{temp_protein_search}/output_{gene}_sorted_pBLAST.csv', input_database_fasta=f'{database}', blastpsw=blastpnsw)
         print_quiet_mode(f'Performing the Smith-Waterman algorithm on {len(sequence_pairs)} sequence pairs...')
 
-        sm(output_dir, gene_name=gene, sequence_pairs=sequence_pairs, threads=threads, matrix=matrix, match=match, mismatch=mismatch, gap_open=gap_open, gap_extend=gap_extend)
+        sm(temp_SW_csv, gene_name=gene, sequence_pairs=sequence_pairs, threads=threads, matrix=matrix, match=match, mismatch=mismatch, gap_open=gap_open, gap_extend=gap_extend)
         print_quiet_mode(f'smith waterman + name_and_sequence_pair finished')
 
-        csv_sorter(f'{output_dir}/output_{gene}_smith_waterman.csv', gene, temp_SW_csv, only_sort=True, sort_value_metric='Score', name_output='sorted_alignment')
+        csv_sorter(f'{temp_SW_csv}/output_{gene}_smith_waterman.csv', gene, temp_SW_csv, only_sort=True, sort_value_metric='Score', name_output='sorted_alignment')
 
-        ## Implementation of Thanos' code
+        ## Implementation of normalization code
 
         if mass_n_length:
             print('Calculation of mass and length of candidate proteins: started...')
-            dereplicated_results = dereplicate_highest_score(f'{output_dir}/output_{gene}_sorted_alignment.csv')
-            calculate_mass_length(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', dereplicated_results, gene, output_dir)
+            dereplicated_results = dereplicate_highest_score(f'{temp_SW_csv}/output_{gene}_sorted_alignment.csv')
+            calculate_mass_length(f'{output_dir}/output_{gene}_DNAtoProtein.fasta', dereplicated_results, f'{temp_protein_search}/output_{gene}_sorted_pBLAST.csv', gene, output_dir)
+
             print('Calculation of mass and length of candidate proteins: finished')
+
+        # Statistical analysis - thanos
+        # ==================================================================================================================
+
+        # Create directory for results
+        statistics_directory = f'{output_dir}/Statistical_analysis/'
+
+        os.makedirs(statistics_directory, exist_ok=True)
+
+
+        # TODO: add support for changing plot_dpi and multiple_correction variables through the command line
+        statistics_calculation(f'{output_dir}/final_results_{gene}.csv', statistics_directory)
 
     finally:
         if not save_intermediates:
@@ -113,13 +132,14 @@ def main(fasta_path,
 
 if __name__ == "__main__":
 
+
     ## The code below is only valid if the chromosearch-function is run via the terminal.
 
     parser = argparse.ArgumentParser(description="Process a single genomic data file and perform various bioinformatics tasks.")
     parser.add_argument("fasta_file", help="Path to the fasta file with the whole genome for the strain")
     parser.add_argument("output_path", help="Path to where to save the output files")
     parser.add_argument("gene", help="Name of the gene to process")
-    parser.add_argument("-db", "--database", default='databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24', help="Path to the chromoprotein database")
+    parser.add_argument("-db", "--database", default='databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.fasta', help="Path to the chromoprotein database")
     parser.add_argument("-t", "--threads", type = int, default=1, help="Number of threads available to the pipeline. Set to 0 or negative numbers to use all available cores")
     parser.add_argument("-M", "--matrix", action="store_false", help="If you want to disable BLOSUM62 matrix and use standard scores")
     parser.add_argument("--match", type=int, default=3, help="Score for a match")
