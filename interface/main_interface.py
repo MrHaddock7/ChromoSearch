@@ -133,8 +133,6 @@ class Main_app:
                     self._entries[label_text] = "databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24"  # Store the StringVar instead of the dropdown widget
                 elif selected_option.get() == "Pigment-pathway enzymes":
                     self._entries[label_text] = "databases/pigment_biosynthesis_chromoproteins/uniprotkb_go_manual_0046148_NOT_taxonom_2024_07_01"
-                # else:
-                #     raise ValueError("Invalid argument for the database")
 
             else:
                 entry = tk.Entry(root, width=50, justify='center')
