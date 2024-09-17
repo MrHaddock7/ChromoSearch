@@ -183,10 +183,10 @@ if __name__ == "__main__":
         description="Process a single genomic data file and perform various bioinformatics tasks."
     )
     parser.add_argument(
-        "fasta_file", help="Path to the fasta file with the whole genome for the strain"
+        "-i", "--input-genome", help="Path to the fasta file for the bacterial genome."
     )
     parser.add_argument("output_path", help="Path to where to save the output files")
-    parser.add_argument("gene", help="Name of the gene to process")
+    parser.add_argument("-p", "--prefix", help="Naming prefix for output files.")
     parser.add_argument(
         "-db",
         "--database",
@@ -256,14 +256,14 @@ if __name__ == "__main__":
             "fdr_tsbh",
             "fdr_tsbky",
         ],
-        help='Method used to correct p-values for multiple testing. Available methods: "bonferroni", "sidak", "holm-sidak", "holm", "simes-hochberg", "hommel", "fdr_bh", "fdr_by", "fdr_tsbh", "fdr_tsbky" Default:  Benjamini-Hochberg.',
+        help='Method used to correct p-values for multiple testing using the statsmodels.stats.multitest module. Available methods: "bonferroni", "sidak", "holm-sidak", "holm", "simes-hochberg", "hommel", "fdr_bh", "fdr_by", "fdr_tsbh", "fdr_tsbky" Default:  Benjamini-Hochberg.',
     )
 
     args = parser.parse_args()
 
-    fasta_path_argument = args.fasta_file
+    fasta_path_argument = args.input_genome
     output_path_argument = args.output_path
-    gene_argument = args.gene
+    gene_argument = args.prefix
     database_argument = args.database
     save_intermediates_argument = args.save_intermediates
     matrix_argument = args.matrix
@@ -281,8 +281,8 @@ if __name__ == "__main__":
     if args.threads <= 0:
         threads = os.cpu_count()
     elif args.threads > os.cpu_count():
-        raise Exception(
-            "Number of threads specified exceeds those available in the system. Please specify a lower count, or run single-threaded"
+        raise ValueError(
+            "Number of threads specified exceeds those available in the system. Please specify a lower count, or run in single-threaded mode."
         )
     else:
         threads = args.threads
