@@ -8,6 +8,7 @@ import tempfile
 from scripts.protein_sequence_obtainer import name_and_sequence_pair as nm
 from scripts.smith_waterman import smith_waterman_alignment as sm
 from scripts.protein_search import protein_blastp_search as pbs
+from scripts.protein_search import make_blast_protein_database 
 from scripts.sorter import csv_sorter
 from scripts.DNAtoProtein_prodigal import run_prodigal as DNAtoProtein
 from scripts.statistics import statistics_calculation
@@ -33,7 +34,8 @@ def main(fasta_path,
          gap_extend=-4, 
          blastpnsw=True, 
          quiet_mode=False,
-         mass_n_length=True):
+         mass_n_length=True,
+         create_database=True):
     
     logging.basicConfig(
         level=logging.DEBUG,
@@ -47,6 +49,8 @@ def main(fasta_path,
     logger.info(f'Processing the {gene} gene')
     logger.info(f'{database}')
 
+    ## Creation of appropriate directories
+
     output_dir = f'{output_path}/{gene}'
     temp_output = f'temp/{gene}'
     if not os.path.exists(output_dir):
@@ -57,10 +61,11 @@ def main(fasta_path,
         os.makedirs(temp_output)
         logger.info(f'Created directory: {temp_output}')
 
-
     # if save_intermediates:
     temp_protein_search = os.path.join(temp_output)
     temp_SW_csv = os.path.join(temp_output)
+
+    ## Prints more detailed information regarding the execution of the script, if quite_mode == False
 
     def print_quiet_mode(message):
         if not quiet_mode:
@@ -69,18 +74,22 @@ def main(fasta_path,
     try:
 
         ## Initiation of the pipeline
+        ## Creation of database, if --create_database == True
+
+        if create_database:
+            make_blast_protein_database(fasta_path)
         
         if process:
             print_quiet_mode(f'Identifying candidate proteins in DNA: started...')
             DNAtoProtein(fasta_path, output_dir, gene)
             print_quiet_mode(f'Identifying candidate proteins in DNA: complete')
 
-
         print_quiet_mode('Running blastP search: started...')
-        pbs(f'{output_dir}/output_{gene}_DNAtoProtein.fasta',
-            gene,
-            temp_protein_search,
-            input_database=f'{database}', threads = threads)
+        if process: 
+            pbs(f'{output_dir}/output_{gene}_DNAtoProtein.fasta' if process else fasta_path,
+                gene,
+                temp_protein_search,
+                input_database=f'{database}', threads = threads)
         
         print_quiet_mode(f'Running blastP search: complete')
 
@@ -150,6 +159,7 @@ if __name__ == "__main__":
     parser.add_argument("-P", "--process", action="store_false", help="Flag to skip the DNA to Protein processing step")
     parser.add_argument("-bpsw", "--blastpandsmithwaterman", action="store_false", help="Flag to turn off Smith-Waterman algorithm based on blastp results, and instead perform Smith-Waterman on all possible candidate protein-database protein combinations. NOTE! This can be VERY computationally intensive for larger sequences and/or databases.")
     parser.add_argument("-q", "--quiet", action="store_true", help="Quiets the text-outputs of the ChromoSearch")
+    parser.add_argument("-cd", "--create_database", action="store_false")
 
     args = parser.parse_args()
 
@@ -166,6 +176,7 @@ if __name__ == "__main__":
     process_argument = args.process
     blastpnsw_argument = args.blastpandsmithwaterman
     quiet_argument = args.quiet
+    create_database = args.create_database
 
     # check options for threads arg
     # assign all available cpus
@@ -191,4 +202,5 @@ if __name__ == "__main__":
          gap_open=gap_open_argument, 
          gap_extend=gap_extend_argument, 
          blastpnsw=blastpnsw_argument,
-         quiet_mode=quiet_argument)
+         quiet_mode=quiet_argument,
+         create_database=create_database)

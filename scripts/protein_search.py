@@ -7,14 +7,13 @@ import csv
 
 logger = logging.getLogger(__name__)
 
-
-
-def make_blast_protein_database(input_database):
+def make_blast_protein_database(input_database, store_directory_database = "databases"):
     """
     Creates the protein database for BLASTP - protein_blastp_search() in a temporary location.
 
     Args:
         input_database (str): Location of the input FASTA file protein sequences.
+        store_directory_database (str): Location of the output created database
 
     Raises:
         FileNotFoundError: Input FASTA cannot be accessed.
@@ -28,20 +27,25 @@ def make_blast_protein_database(input_database):
     if not os.path.isfile(input_database):
         raise FileNotFoundError(f"The specified database FASTA file does not exist: {input_database}")
 
-
     # Set database prefix
     output_db_name = os.path.splitext(os.path.basename(input_database))[0]
 
     # Create a temporary directory for the database
-    temp_dir = tempfile.mkdtemp()
+
+    temp_dir = store_directory_database
     db_path = os.path.join(temp_dir, output_db_name)
+
+    if os.path.isdir(db_path):
+        logger.debug('Database already exists, exiting...')
+        print("Database already exists, exiting...")
+        return
 
     # Construct the makeblastdb command
     command = [
         'makeblastdb',
         '-in', input_database,
         '-dbtype', 'prot',
-        '-out', db_path
+        '-out', db_path+input_database[:-6]
     ]
 
     try:
@@ -62,9 +66,6 @@ def make_blast_protein_database(input_database):
     except Exception as e:
         logger.error(f"An unexpected error occurred: {e}")
         raise
-        
-
-
 
 def protein_blastp_search(input_sequence, genome, output, input_database, threads):
     """Run BLASTP of the putative proteins against the predefined database.
@@ -122,3 +123,6 @@ def protein_blastp_search(input_sequence, genome, output, input_database, thread
     except KeyboardInterrupt:
         logger.warning("Data processing interrupted by user")
     logger.debug('Exiting protein_blastp_search function')
+
+if __name__ == "__main__":
+    make_blast_protein_database("/Users/klonk/Desktop/iGEM_files/Chromoprotein_Strikes_Back/ChromoSearch/databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.fasta")
