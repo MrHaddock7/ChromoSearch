@@ -1,6 +1,8 @@
 # ChromoSearch
 
-This is a pipeline that can be used to find matches of chromoproteins or pigment creating enzymes in a genome. This could be used as a first step when looking for the source of a color in a organism.
+Our pipeline offers a streamlined approach for identifying chromoproteins by analyzing genomic data. It starts with sequenced genomic data in .fasta format and uses Prodigal to identify potential protein-coding sequences, which are translated into putative proteins. These are then compared against databases of known chromoproteins or pigment-producing enzymes using pBLAST, followed by a more detailed Smith-Waterman alignment for high-scoring matches. The molecular weight, length, and a normalized score are calculated for each protein to assess their plausibility, and a Gumbel distribution is used to model rare hits. The pipeline automates these steps, providing an efficient way to process next-generation sequencing data and identify potential chromoproteins for further validation.
+
+This approach offers a faster, cost-effective alternative to traditional protein identification methods by combining genomic data analysis with automated protein sequence prediction and comparison.
 
 # Installation
 
