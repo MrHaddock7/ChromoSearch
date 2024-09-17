@@ -2,6 +2,8 @@ import os
 import logging
 import pandas as pd
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 import seaborn as sns

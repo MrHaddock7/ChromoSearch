@@ -167,7 +167,7 @@ def main(
         ## Implementation of normalization code
 
         if mass_n_length:
-            print("Calculation of mass and length of candidate proteins: started...")
+            print_quiet_mode("Calculation of mass and length of candidate proteins: started...")
             dereplicated_results = dereplicate_highest_score(
                 f"{temp_SW_csv}/output_{gene}_sorted_alignment.csv"
             )
@@ -179,7 +179,7 @@ def main(
                 output_dir,
             )
 
-            print("Calculation of mass and length of candidate proteins: finished")
+            print_quiet_mode("Calculation of mass and length of candidate proteins: finished")
 
         # Statistical analysis - thanos
         # ==================================================================================================================
