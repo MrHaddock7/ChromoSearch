@@ -5,12 +5,13 @@ import logging
 import os
 import tempfile
 
+from scripts.check_requirements import check_requirements
 from scripts.protein_sequence_obtainer import name_and_sequence_pair as nm
 from scripts.smith_waterman import smith_waterman_alignment as sm
 from scripts.protein_search import protein_blastp_search as pbs
 from scripts.sorter import csv_sorter
 from scripts.DNAtoProtein_prodigal import run_prodigal as DNAtoProtein
-from scripts.statistics import statistics_calculation
+from scripts.statistical_analysis import statistics_calculation
 
 ## Thanos' code
 
@@ -60,6 +61,29 @@ def main(
     if not os.path.exists(temp_output):
         os.makedirs(temp_output)
         logger.info(f"Created directory: {temp_output}")
+
+    # =================================================================
+    # Check requirements before running the pipeline
+    # =================================================================
+
+    # Dictionary used for checking requirements
+    # packages are used by
+    requirements = {
+        "packages": [
+            ("Bio", "1.84"),  # biopython
+            ("matplotlib", "3.9.2"),
+            ("numpy", "2.1.0"),
+            ("pandas", "2.2.2"),
+            ("scipy", "1.14.1"),
+            ("seaborn", "0.13.2"),
+            ("statsmodels", "0.14.2"),
+        ],
+        "python_version": "3.12.5",
+        "prodigal_version": "2.6.3",
+        "blast_version": "2.16.0",
+    }
+
+    check_requirements(requirements)
 
     # if save_intermediates:
     temp_protein_search = os.path.join(temp_output)
@@ -158,7 +182,7 @@ def main(
 
         os.makedirs(statistics_directory, exist_ok=True)
 
-        # TODO: add support for changing plot_dpi and multiple_correction variables through the command line
+        # TODO: add support for changing plot_dpi through the command line
         statistics_calculation(
             f"{output_dir}/final_results_{gene}.csv",
             statistics_directory,
