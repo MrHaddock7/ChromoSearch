@@ -210,9 +210,17 @@ if __name__ == "__main__":
     parser.add_argument(
         "--mismatch", type=int, default=-1, help="Penalty for a mismatch"
     )
-    parser.add_argument("--gap_open", type=int, default=-10, help="Gap opening penalty")
     parser.add_argument(
-        "--gap_extend", type=int, default=-4, help="Gap extension penalty"
+        "--gap_open",
+        type=int,
+        default=-10,
+        help="Gap opening penalty for the Waterman-Smith alignments.",
+    )
+    parser.add_argument(
+        "--gap_extend",
+        type=int,
+        default=-4,
+        help="Gap extension penalty for the Waterman-Smith alignments.",
     )
     parser.add_argument(
         "-s",
@@ -236,7 +244,7 @@ if __name__ == "__main__":
         "-q",
         "--quiet",
         action="store_true",
-        help="Quiets the text-outputs of the ChromoSearch",
+        help="Quiets the text-outputs of the ChromoSearch.",
     )
 
     # Argument for the multiple test correction method used by statistics.py
