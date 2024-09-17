@@ -28,7 +28,7 @@ def main(
     database,
     process=True,
     save_intermediates=True,
-    threads=1,
+    threads=2,
     matrix=True,
     match=3,
     mismatch=-1,
@@ -102,6 +102,8 @@ def main(
             DNAtoProtein(fasta_path, output_dir, gene)
             print_quiet_mode(f"Identifying candidate proteins in DNA: complete")
 
+        print(f"{output_dir}/output_{gene}_DNAtoProtein.fasta")
+        print(f"{temp_protein_search}/output_{gene}_protein_search.csv")
         print_quiet_mode("Running blastP search: started...")
         pbs(
             f"{output_dir}/output_{gene}_DNAtoProtein.fasta",
@@ -253,7 +255,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-s",
         "--save_intermediates",
-        action="store_true",
+        action="store_false",
         help="Flag to save intermediate files",
     )
     parser.add_argument(
