@@ -28,7 +28,7 @@ def main(
     database,
     process=True,
     save_intermediates=True,
-    threads=2,
+    threads=5,
     matrix=True,
     match=3,
     mismatch=-1,
@@ -106,7 +106,7 @@ def main(
         print(f"{temp_protein_search}/output_{gene}_protein_search.csv")
         print_quiet_mode("Running blastP search: started...")
         pbs(
-            f"{output_dir}/output_{gene}_DNAtoProtein.fasta",
+            f"{output_dir}/output_{gene}_DNAtoProtein.fasta" if process else fasta_path,
             gene,
             temp_protein_search,
             input_database=f"{database}",
