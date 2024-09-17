@@ -97,16 +97,21 @@ def main(
 
         ## Initiation of the pipeline
 
+        DNA_to_protein_directory = f"{output_dir}/output_{gene}_DNAtoProtein.fasta"
+
         if process:
             print_quiet_mode(f"Identifying candidate proteins in DNA: started...")
             DNAtoProtein(fasta_path, output_dir, gene)
             print_quiet_mode(f"Identifying candidate proteins in DNA: complete")
+        
+        else: 
+            DNA_to_protein_directory = fasta_path
 
-        print(f"{output_dir}/output_{gene}_DNAtoProtein.fasta")
+        print(DNA_to_protein_directory)
         print(f"{temp_protein_search}/output_{gene}_protein_search.csv")
         print_quiet_mode("Running blastP search: started...")
         pbs(
-            f"{output_dir}/output_{gene}_DNAtoProtein.fasta" if process else fasta_path,
+            DNA_to_protein_directory,
             gene,
             temp_protein_search,
             input_database=f"{database}",
@@ -128,7 +133,7 @@ def main(
 
         print_quiet_mode(f"smith waterman + name_and_sequence_pair started...")
         sequence_pairs = nm(
-            f"{output_dir}/output_{gene}_DNAtoProtein.fasta",
+            DNA_to_protein_directory,
             f"{temp_protein_search}/output_{gene}_sorted_pBLAST.csv",
             input_database_fasta=f"{database}",
             blastpsw=blastpnsw,
@@ -167,7 +172,7 @@ def main(
                 f"{temp_SW_csv}/output_{gene}_sorted_alignment.csv"
             )
             calculate_mass_length(
-                f"{output_dir}/output_{gene}_DNAtoProtein.fasta",
+                DNA_to_protein_directory,
                 dereplicated_results,
                 f"{temp_protein_search}/output_{gene}_sorted_pBLAST.csv",
                 gene,
