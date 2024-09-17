@@ -31,7 +31,7 @@ def check_requirements(requirements):
 def system_exit_missing_dependencies():
 
     print(
-        "Chromosearch is missing some required dependencies, please install them, ensure they are available in PATH,and then rerun the pipeline."
+        "Chromosearch is missing some required dependencies. Please install them, ensure they are available in PATH, and then rerun the pipeline."
     )
     sys.exit(2)
 

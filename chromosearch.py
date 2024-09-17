@@ -207,10 +207,14 @@ if __name__ == "__main__":
         description="Process a single genomic data file and perform various bioinformatics tasks."
     )
     parser.add_argument(
-        "-i", "--input-genome", help="Path to the fasta file for the bacterial genome."
+        "-i",
+        "--input-genome",
+        help="Path to the fasta file for the bacterial genome.",
+        required=True,
     )
-    parser.add_argument("output_path", help="Path to where to save the output files")
-    parser.add_argument("-p", "--prefix", help="Naming prefix for output files.")
+    parser.add_argument(
+        "-p", "--prefix", required=True, help="Naming prefix for output files."
+    )
     parser.add_argument(
         "-db",
         "--database",
@@ -270,7 +274,6 @@ if __name__ == "__main__":
         action="store_true",
         help="Quiets the text-outputs of the ChromoSearch.",
     )
-
     # Argument for the multiple test correction method used by statistics.py
     parser.add_argument(
         "--mutliple-correction",
@@ -290,6 +293,7 @@ if __name__ == "__main__":
         ],
         help='Method used to correct p-values for multiple testing using the statsmodels.stats.multitest module. Available methods: "bonferroni", "sidak", "holm-sidak", "holm", "simes-hochberg", "hommel", "fdr_bh", "fdr_by", "fdr_tsbh", "fdr_tsbky" Default:  Benjamini-Hochberg.',
     )
+    parser.add_argument("output_path", help="Path to where to save the output files")
 
     args = parser.parse_args()
 
