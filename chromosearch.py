@@ -184,8 +184,13 @@ def main(
             multiple_test_correction,
         )
 
-        # only save the final results, with statistics
+        # final corrections to the dataframe
+        final_results_dataframe.rename(
+            columns={"Name1": "Genome_entry_id", "Name2": "Database_hit_id"},
+            inplace=True,
+        )
 
+        # only save the final results, with statistics
         final_results_dataframe.to_csv(
             f"{output_dir}/chromosearch_{gene}_final_results.csv"
         )
