@@ -4,6 +4,7 @@ import argparse
 import logging
 import os
 import tempfile
+import pandas as pd
 
 from scripts.initialization_scripts import check_requirements
 from scripts.protein_sequence_obtainer import name_and_sequence_pair as nm
@@ -154,18 +155,16 @@ def main(
         )
 
         ## Implementation of normalization code
-
+        results_with_mass_and_length = 0
         if mass_n_length:
             print("Calculation of mass and length of candidate proteins: started...")
             dereplicated_results = dereplicate_highest_score(
                 f"{temp_SW_csv}/output_{gene}_sorted_alignment.csv"
             )
-            calculate_mass_length(
+            results_with_mass_and_length = calculate_mass_length(
                 f"{output_dir}/output_{gene}_DNAtoProtein.fasta",
                 dereplicated_results,
                 f"{temp_protein_search}/output_{gene}_sorted_pBLAST.csv",
-                gene,
-                output_dir,
             )
 
             print("Calculation of mass and length of candidate proteins: finished")
@@ -173,16 +172,22 @@ def main(
         # Statistical analysis - thanos
         # ==================================================================================================================
 
-        # Create directory for results
+        # Create directory for outputs of statistical analysis (plots)
         statistics_directory = f"{output_dir}/Statistical_analysis/"
 
         os.makedirs(statistics_directory, exist_ok=True)
 
         # TODO: add support for changing plot_dpi through the command line
-        statistics_calculation(
-            f"{output_dir}/final_results_{gene}.csv",
+        final_results_dataframe = statistics_calculation(
+            results_with_mass_and_length,
             statistics_directory,
             multiple_test_correction,
+        )
+
+        # only save the final results, with statistics
+
+        final_results_dataframe.to_csv(
+            f"{output_dir}/chromosearch_{gene}_final_results.csv"
         )
 
     finally:
