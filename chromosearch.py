@@ -5,13 +5,14 @@ import logging
 import os
 import tempfile
 
-from scripts.check_requirements import check_requirements
+from scripts.initialization_scripts import check_requirements
 from scripts.protein_sequence_obtainer import name_and_sequence_pair as nm
 from scripts.smith_waterman import smith_waterman_alignment as sm
 from scripts.protein_search import protein_blastp_search as pbs
 from scripts.sorter import csv_sorter
 from scripts.DNAtoProtein_prodigal import run_prodigal as DNAtoProtein
 from scripts.statistical_analysis import statistics_calculation
+from scripts.initialization_scripts import suppress_output
 
 ## Thanos' code
 
@@ -35,7 +36,6 @@ def main(
     gap_open=-10,
     gap_extend=-4,
     blastpnsw=True,
-    quiet_mode=False,
     mass_n_length=True,
     multiple_test_correction="fdr_bh",
 ):
@@ -89,20 +89,16 @@ def main(
     temp_protein_search = os.path.join(temp_output)
     temp_SW_csv = os.path.join(temp_output)
 
-    def print_quiet_mode(message):
-        if not quiet_mode:
-            print(message)
-
     try:
 
         ## Initiation of the pipeline
 
         if process:
-            print_quiet_mode(f"Identifying candidate proteins in DNA: started...")
+            print(f"Identifying candidate proteins in DNA: started...")
             DNAtoProtein(fasta_path, output_dir, gene)
-            print_quiet_mode(f"Identifying candidate proteins in DNA: complete")
+            print(f"Identifying candidate proteins in DNA: complete")
 
-        print_quiet_mode("Running blastP search: started...")
+        print("Running blastP search: started...")
         pbs(
             f"{output_dir}/output_{gene}_DNAtoProtein.fasta",
             gene,
@@ -111,9 +107,9 @@ def main(
             threads=threads,
         )
 
-        print_quiet_mode(f"Running blastP search: complete")
+        print(f"Running blastP search: complete")
 
-        print_quiet_mode(f"Removing hits with high E-values: started")
+        print(f"Removing hits with high E-values: started")
         csv_sorter(
             input_csv=f"{temp_protein_search}/output_{gene}_protein_search.csv",
             genome=gene,
@@ -122,16 +118,16 @@ def main(
             cut_off_value=float(0.05),
             name_output="sorted_pBLAST",
         )
-        print_quiet_mode(f"Removing hits with high E-values: complete")
+        print(f"Removing hits with high E-values: complete")
 
-        print_quiet_mode(f"smith waterman + name_and_sequence_pair started...")
+        print(f"smith waterman + name_and_sequence_pair started...")
         sequence_pairs = nm(
             f"{output_dir}/output_{gene}_DNAtoProtein.fasta",
             f"{temp_protein_search}/output_{gene}_sorted_pBLAST.csv",
             input_database_fasta=f"{database}",
             blastpsw=blastpnsw,
         )
-        print_quiet_mode(
+        print(
             f"Performing the Smith-Waterman algorithm on {len(sequence_pairs)} sequence pairs..."
         )
 
@@ -146,7 +142,7 @@ def main(
             gap_open=gap_open,
             gap_extend=gap_extend,
         )
-        print_quiet_mode(f"smith waterman + name_and_sequence_pair finished")
+        print(f"smith waterman + name_and_sequence_pair finished")
 
         csv_sorter(
             f"{temp_SW_csv}/output_{gene}_smith_waterman.csv",
@@ -309,7 +305,6 @@ if __name__ == "__main__":
     gap_extend_argument = args.gap_extend
     process_argument = args.process
     blastpnsw_argument = args.blastpandsmithwaterman
-    quiet_argument = args.quiet
     mutliple_test_correction = args.mutliple_correction
 
     # check options for threads arg
@@ -328,7 +323,10 @@ if __name__ == "__main__":
             "You have chosen to run the pipeline using only 1 thread. This might take some time...\n"
         )
 
-    main(
+    # Use decorated main to suppress output, other than errors
+    decorated_with_suppress_main = suppress_output(args.quiet)(main)
+
+    decorated_with_suppress_main(
         fasta_path=fasta_path_argument,
         output_path=output_path_argument,
         gene=gene_argument,
@@ -342,6 +340,5 @@ if __name__ == "__main__":
         gap_open=gap_open_argument,
         gap_extend=gap_extend_argument,
         blastpnsw=blastpnsw_argument,
-        quiet_mode=quiet_argument,
         multiple_test_correction=mutliple_test_correction,
     )
