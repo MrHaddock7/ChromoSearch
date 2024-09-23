@@ -1,5 +1,7 @@
 import subprocess
 import sys
+import os
+from functools import wraps
 
 
 def check_requirements(requirements):
@@ -132,3 +134,37 @@ def check_python_version(version):
         print(
             f"Warning: Python version mismatch. Expected: 3.12.5, Installed: {python_version}. This may lead to errors, or unexpected behaviour."
         )
+
+
+def suppress_output(suppress):
+    """
+    Decorator to suppress stdout of the decorated function if suppress is True.
+    Errors sent to stderr are not suppressed.
+
+    Args:
+        suppress (bool): Flag indicating whether to suppress the output.
+
+    Returns:
+        The decorated function with conditional output suppression.
+    """
+
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if suppress:
+                # Open a null file to redirect stdout
+                with open(os.devnull, "w") as devnull:
+                    original_stdout = sys.stdout
+                    sys.stdout = devnull
+                    try:
+                        return func(*args, **kwargs)
+                    finally:
+                        # Restore original stdout
+                        sys.stdout = original_stdout
+            else:
+                # If not suppressing, just call the function normally
+                return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator

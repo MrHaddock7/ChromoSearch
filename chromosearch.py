@@ -4,14 +4,16 @@ import argparse
 import logging
 import os
 import tempfile
+import pandas as pd
 
-from scripts.check_requirements import check_requirements
+from scripts.initialization_scripts import check_requirements
 from scripts.protein_sequence_obtainer import name_and_sequence_pair as nm
 from scripts.smith_waterman import smith_waterman_alignment as sm
 from scripts.protein_search import protein_blastp_search as pbs
 from scripts.sorter import csv_sorter
 from scripts.DNAtoProtein_prodigal import run_prodigal as DNAtoProtein
 from scripts.statistical_analysis import statistics_calculation
+from scripts.initialization_scripts import suppress_output
 
 ## Thanos' code
 
@@ -35,7 +37,6 @@ def main(
     gap_open=-10,
     gap_extend=-4,
     blastpnsw=True,
-    quiet_mode=False,
     mass_n_length=True,
     multiple_test_correction="fdr_bh",
 ):
@@ -89,10 +90,6 @@ def main(
     temp_protein_search = os.path.join(temp_output)
     temp_SW_csv = os.path.join(temp_output)
 
-    def print_quiet_mode(message):
-        if not quiet_mode:
-            print(message)
-
     try:
 
         ## Initiation of the pipeline
@@ -100,16 +97,15 @@ def main(
         DNA_to_protein_directory = f"{output_dir}/output_{gene}_DNAtoProtein.fasta"
 
         if process:
-            print_quiet_mode(f"Identifying candidate proteins in DNA: started...")
+            print(f"Identifying candidate proteins in DNA: started...")
             DNAtoProtein(fasta_path, output_dir, gene)
-            print_quiet_mode(f"Identifying candidate proteins in DNA: complete")
+            print(f"Identifying candidate proteins in DNA: complete")
+            print(f"Identifying candidate proteins in DNA: complete")
         
         else: 
             DNA_to_protein_directory = fasta_path
 
-        print(DNA_to_protein_directory)
-        print(f"{temp_protein_search}/output_{gene}_protein_search.csv")
-        print_quiet_mode("Running blastP search: started...")
+        print("Running blastP search: started...")
         pbs(
             DNA_to_protein_directory,
             gene,
@@ -118,9 +114,9 @@ def main(
             threads=threads,
         )
 
-        print_quiet_mode(f"Running blastP search: complete")
+        print(f"Running blastP search: complete")
 
-        print_quiet_mode(f"Removing hits with high E-values: started")
+        print(f"Removing hits with high E-values: started")
         csv_sorter(
             input_csv=f"{temp_protein_search}/output_{gene}_protein_search.csv",
             genome=gene,
@@ -129,16 +125,16 @@ def main(
             cut_off_value=float(0.05),
             name_output="sorted_pBLAST",
         )
-        print_quiet_mode(f"Removing hits with high E-values: complete")
+        print(f"Removing hits with high E-values: complete")
 
-        print_quiet_mode(f"smith waterman + name_and_sequence_pair started...")
+        print(f"smith waterman + name_and_sequence_pair started...")
         sequence_pairs = nm(
             DNA_to_protein_directory,
             f"{temp_protein_search}/output_{gene}_sorted_pBLAST.csv",
             input_database_fasta=f"{database}",
             blastpsw=blastpnsw,
         )
-        print_quiet_mode(
+        print(
             f"Performing the Smith-Waterman algorithm on {len(sequence_pairs)} sequence pairs..."
         )
 
@@ -153,7 +149,7 @@ def main(
             gap_open=gap_open,
             gap_extend=gap_extend,
         )
-        print_quiet_mode(f"smith waterman + name_and_sequence_pair finished")
+        print(f"smith waterman + name_and_sequence_pair finished")
 
         csv_sorter(
             f"{temp_SW_csv}/output_{gene}_smith_waterman.csv",
@@ -165,18 +161,17 @@ def main(
         )
 
         ## Implementation of normalization code
-
+        results_with_mass_and_length = 0
         if mass_n_length:
             print_quiet_mode("Calculation of mass and length of candidate proteins: started...")
             dereplicated_results = dereplicate_highest_score(
                 f"{temp_SW_csv}/output_{gene}_sorted_alignment.csv"
             )
-            calculate_mass_length(
+
+            results_with_mass_and_length = calculate_mass_length(
                 DNA_to_protein_directory,
                 dereplicated_results,
                 f"{temp_protein_search}/output_{gene}_sorted_pBLAST.csv",
-                gene,
-                output_dir,
             )
 
             print_quiet_mode("Calculation of mass and length of candidate proteins: finished")
@@ -184,16 +179,27 @@ def main(
         # Statistical analysis - thanos
         # ==================================================================================================================
 
-        # Create directory for results
+        # Create directory for outputs of statistical analysis (plots)
         statistics_directory = f"{output_dir}/Statistical_analysis/"
 
         os.makedirs(statistics_directory, exist_ok=True)
 
         # TODO: add support for changing plot_dpi through the command line
-        statistics_calculation(
-            f"{output_dir}/final_results_{gene}.csv",
+        final_results_dataframe = statistics_calculation(
+            results_with_mass_and_length,
             statistics_directory,
             multiple_test_correction,
+        )
+
+        # final corrections to the dataframe
+        final_results_dataframe.rename(
+            columns={"Name1": "Genome_entry_id", "Name2": "Database_hit_id"},
+            inplace=True,
+        )
+
+        # only save the final results, with statistics
+        final_results_dataframe.to_csv(
+            f"{output_dir}/chromosearch_{gene}_final_results.csv"
         )
 
     finally:
@@ -316,7 +322,6 @@ if __name__ == "__main__":
     gap_extend_argument = args.gap_extend
     process_argument = args.process
     blastpnsw_argument = args.blastpandsmithwaterman
-    quiet_argument = args.quiet
     mutliple_test_correction = args.mutliple_correction
 
     # check options for threads arg
@@ -335,7 +340,10 @@ if __name__ == "__main__":
             "You have chosen to run the pipeline using only 1 thread. This might take some time...\n"
         )
 
-    main(
+    # Use decorated main to suppress output, other than errors
+    decorated_with_suppress_main = suppress_output(args.quiet)(main)
+
+    decorated_with_suppress_main(
         fasta_path=fasta_path_argument,
         output_path=output_path_argument,
         gene=gene_argument,
@@ -349,6 +357,5 @@ if __name__ == "__main__":
         gap_open=gap_open_argument,
         gap_extend=gap_extend_argument,
         blastpnsw=blastpnsw_argument,
-        quiet_mode=quiet_argument,
         multiple_test_correction=mutliple_test_correction,
     )

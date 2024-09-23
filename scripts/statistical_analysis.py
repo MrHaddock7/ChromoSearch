@@ -12,7 +12,7 @@ import statsmodels.stats.multitest as multitest
 
 
 def statistics_calculation(
-    final_results_file, save_loc, multiple_correction_method, plot_dpi=600
+    final_results_dataframe, save_loc, multiple_correction_method, plot_dpi=600
 ):
     """Performs the statistical analysis for the pipeline.
 
@@ -24,33 +24,32 @@ def statistics_calculation(
     """
 
     # Load 'final' data and extract normalized scores
-    df_final_results = pd.read_csv(final_results_file, sep=",")
-    df_final_results.drop(["Unnamed: 0", "evalue"], axis=1, inplace=True)
+    final_results_dataframe.drop(["evalue"], axis=1, inplace=True)
 
-    scores = df_final_results["Normalized_score"].to_numpy()
+    scores = final_results_dataframe["Normalized_score"].to_numpy()
 
     # Create and save a normalized histogram of the normalized scores
     # With a KDE estimator line
     save_normalized_histogram(scores, save_loc, plot_dpi)
 
     # Calculate and append robust Z-scores to new column
-    df_final_results["Robust_Zscores"] = calculate_robust_z_scores(scores)
+    final_results_dataframe["Robust_Zscores"] = calculate_robust_z_scores(scores)
 
     # Fit gumbel curve to final normalized scores
     gumbel_params = fit_gumbel(scores, save_loc, plot_dpi)
 
     # Calculate corrected p-values and save as results column
-    df_final_results["Corrected_pvalues"] = calculate_gumbel_p_values(
+    final_results_dataframe["Corrected_pvalues"] = calculate_gumbel_p_values(
         scores, gumbel_params, multiple_correction_method
     )
 
     # save the final dataframe
 
-    df_final_results.to_csv(save_loc + "final_results.csv")
+    # df_final_results.to_csv(save_loc + "final_results.csv")
 
-    print(f"Finished statistical analysis and saved results in {save_loc}")
+    print(f"Finished statistical analysis")
 
-    return
+    return final_results_dataframe
 
 
 def save_normalized_histogram(scores, save_path, plot_dpi=600):
