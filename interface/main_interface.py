@@ -130,7 +130,7 @@ class Main_app:
                 dropdown.grid(row=idx, column=1, padx=10, pady=5, sticky='ew')  # Grid instead of pack
                 
                 if selected_option.get() == "Chromoproteins":
-                    self._entries[label_text] = "databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.fasta"  # Store the StringVar instead of the dropdown widget
+                    self._entries[label_text] = "databases/chromoproteins_uniprot/uniprotkb_chromophore_keyword_KW_0157_AND_reviewed_2024_06_24.fasta"  
                 elif selected_option.get() == "Pigment-pathway enzymes":
                     self._entries[label_text] = "databases/pigment_biosynthesis_chromoproteins/uniprotkb_go_manual_0046148_NOT_taxonom_2024_07_01.fasta"
 
