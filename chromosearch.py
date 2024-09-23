@@ -30,7 +30,7 @@ def main(
     database,
     process=True,
     save_intermediates=True,
-    threads=1,
+    threads=5,
     matrix=True,
     match=3,
     mismatch=-1,
@@ -94,14 +94,20 @@ def main(
 
         ## Initiation of the pipeline
 
+        DNA_to_protein_directory = f"{output_dir}/output_{gene}_DNAtoProtein.fasta"
+
         if process:
             print(f"Identifying candidate proteins in DNA: started...")
             DNAtoProtein(fasta_path, output_dir, gene)
             print(f"Identifying candidate proteins in DNA: complete")
+            print(f"Identifying candidate proteins in DNA: complete")
+        
+        else: 
+            DNA_to_protein_directory = fasta_path
 
         print("Running blastP search: started...")
         pbs(
-            f"{output_dir}/output_{gene}_DNAtoProtein.fasta",
+            DNA_to_protein_directory,
             gene,
             temp_protein_search,
             input_database=f"{database}",
@@ -123,7 +129,7 @@ def main(
 
         print(f"smith waterman + name_and_sequence_pair started...")
         sequence_pairs = nm(
-            f"{output_dir}/output_{gene}_DNAtoProtein.fasta",
+            DNA_to_protein_directory,
             f"{temp_protein_search}/output_{gene}_sorted_pBLAST.csv",
             input_database_fasta=f"{database}",
             blastpsw=blastpnsw,
@@ -161,8 +167,9 @@ def main(
             dereplicated_results = dereplicate_highest_score(
                 f"{temp_SW_csv}/output_{gene}_sorted_alignment.csv"
             )
+
             results_with_mass_and_length = calculate_mass_length(
-                f"{output_dir}/output_{gene}_DNAtoProtein.fasta",
+                DNA_to_protein_directory,
                 dereplicated_results,
                 f"{temp_protein_search}/output_{gene}_sorted_pBLAST.csv",
             )
@@ -259,7 +266,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "-s",
         "--save_intermediates",
-        action="store_true",
+        action="store_false",
         help="Flag to save intermediate files",
     )
     parser.add_argument(
